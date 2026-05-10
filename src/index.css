@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-primary: #00A382; /* Vibrant Metallic Emerald */
+  --color-brand-dark: #007D63;    /* Deep Emerald */
+  --color-brand-light: #34D399;   /* Bright Emerald */
+  --color-brand-soft: #ECFDF5;    /* Emerald Tint */
+  
+  --color-enterprise-bg: #ffffff;
+  --color-enterprise-surface: #f8fafc;
+  --color-enterprise-text: #1e293b;    /* Slate 800 - Very sharp for long reading */
+  --color-enterprise-heading: #0f172a; /* Slate 900 - Pure contrast for headings */
+  --color-enterprise-muted: #475569;   /* Slate 600 - Clear secondary text */
+  --color-enterprise-border: #cbd5e1;  /* Clear defined borders */
+
+  --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-spin-slow: spin 40s linear infinite;
+  --animate-float: float 6s ease-in-out infinite;
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+  }
+}
+
+@layer base {
+  body {
+    @apply bg-enterprise-bg text-enterprise-text antialiased;
+    font-family: 'Outfit', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-sans font-bold tracking-tight text-enterprise-heading;
+  }
+
+  h1 { @apply text-5xl md:text-7xl mb-8; }
+  h2 { @apply text-4xl md:text-5xl mb-6; }
+  h3 { @apply text-2xl md:text-3xl mb-4; }
+
+  p { @apply mb-6; }
+
+  ::selection {
+    @apply bg-brand-primary text-white;
+  }
+}
+
+@layer components {
+  /* CLEAN CORPORATE CARDS - NO TRANSPARENCY */
+  .enterprise-card {
+    @apply bg-white rounded-2xl border-2 border-enterprise-border/30 shadow-md hover:shadow-xl hover:border-brand-primary transition-all duration-300 overflow-hidden;
+  }
+
+  /* HIGH CONTRAST BUTTONS */
+  .btn-premium {
+    @apply px-10 py-5 bg-brand-primary text-white font-bold uppercase tracking-widest 
+    hover:bg-brand-dark transition-all duration-200 shadow-lg active:scale-95 rounded-xl;
+  }
+
+  .btn-secondary {
+    @apply px-10 py-5 border-3 border-enterprise-border text-enterprise-heading font-bold uppercase tracking-widest
+    hover:border-brand-primary hover:bg-brand-soft transition-all duration-200 rounded-xl;
+  }
+
+  /* UPDATED SECTION TAGS - MATCHING SCIENTIFIC BADGE THEME */
+  .section-tag {
+    @apply inline-block px-5 py-2.5 bg-white border-2 border-brand-primary text-brand-primary text-[10px] font-black uppercase tracking-[0.3em] rounded-xl mb-10 shadow-xl shadow-brand-primary/5 transition-all;
+  }
+
+  /* ORBITAL & NAV LABELS */
+  .nav-badge {
+    @apply px-5 py-2 bg-white border-2 border-brand-primary text-brand-primary text-[12px] font-medium uppercase tracking-[0.1em] rounded-full transition-all shadow-sm hover:shadow-md hover:bg-brand-soft;
+  }
+
+  .orbit-label {
+    @apply bg-white border-2 border-brand-primary text-brand-primary px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-[0.2em] shadow-xl;
+  }
+}

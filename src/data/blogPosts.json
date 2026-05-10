@@ -1,0 +1,26 @@
+[
+  { 
+    "id": 1,
+    "t": "The Future of Solid State Batteries", 
+    "d": "Exploring the fabrication challenges and equipment required for next-gen solid state cells.", 
+    "cat": "Research",
+    "date": "May 10, 2026",
+    "img": "https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&q=80&w=800" 
+  },
+  { 
+    "id": 2,
+    "t": "Optimizing Slot Die Coating", 
+    "d": "Precision control parameters for high-uniformity film production in fuel cell research.", 
+    "cat": "Technical",
+    "date": "May 05, 2026",
+    "img": "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=800" 
+  },
+  { 
+    "id": 3,
+    "t": "Lab Safety & Compliance", 
+    "d": "Essential guide to ISO 9001:2015 standards in modern battery research facilities.", 
+    "cat": "Safety",
+    "date": "April 28, 2026",
+    "img": "https://images.unsplash.com/photo-1581092324631-01460d33c161?auto=format&fit=crop&q=80&w=800" 
+  }
+]
