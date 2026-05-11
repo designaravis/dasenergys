@@ -30,24 +30,34 @@ const MiniOrbit = ({ category, data, onSelectItem, onHoverItem }) => {
       initial={{ opacity: 0, scale: 0.95 }}
       whileInView={{ opacity: 1, scale: 1 }}
       viewport={{ once: true }}
-      className={`flex flex-col relative transition-all duration-700 min-h-[650px] md:min-h-[800px] ${localHoveredId ? 'z-[1001]' : 'z-10'}`}
+      className={`flex flex-col relative transition-all duration-700 min-h-[450px] md:min-h-[800px] ${localHoveredId ? 'z-[1001]' : 'z-10'}`}
     >
       <div 
-        className="flex-1 relative flex items-center justify-center py-12 md:py-20"
+        className="flex-1 relative flex items-center justify-center py-4 md:py-20"
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => { setIsPaused(false); onHoverItem(null); setLocalHoveredId(null); }}
       >
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slate-50/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
         
-        <div className={`relative z-20 w-32 h-32 md:w-64 md:h-64 bg-brand-primary rounded-full flex items-center justify-center p-8 shadow-2xl shadow-brand-primary/30 border-4 border-white/20 transition-all duration-700 ${localHoveredId ? 'scale-110' : ''}`}>
+        <div className={`relative z-20 w-32 h-32 md:w-64 md:h-64 bg-brand-primary rounded-full flex items-center justify-center p-8 shadow-2xl shadow-brand-primary/30 transition-all duration-700 ${localHoveredId ? 'scale-110' : ''}`}>
           <img src={data.mainProduct} alt={category} className="w-full h-full object-contain" />
+          <div className="absolute bottom-4 md:-bottom-10 left-1/2 -translate-x-1/2 whitespace-nowrap">
+            <span className="text-brand-primary font-black text-[10px] md:text-sm uppercase tracking-[0.1em] md:tracking-[0.3em] bg-white px-4 md:px-6 py-1.5 md:py-2 rounded-full shadow-xl border-2 border-brand-primary">
+              {category} Cell
+            </span>
+          </div>
         </div>
 
         {data.items.map((item, index) => {
           const angle = (rotation + (index * (360 / data.items.length))) * (Math.PI / 180);
-          const radius = window.innerWidth < 768 ? 130 : 260;
+          const radius = window.innerWidth < 768 ? 110 : 260;
           const x = Math.cos(angle) * radius;
           const y = Math.sin(angle) * radius;
+
+          const hoverScale = window.innerWidth < 768 ? 1.8 : 4;
+          const glowShadow = window.innerWidth < 768 
+            ? "shadow-[0_0_30px_rgba(0,163,130,0.4)]" 
+            : "shadow-[0_0_60px_rgba(0,163,130,0.8)]";
 
           return (
             <motion.div
@@ -58,11 +68,11 @@ const MiniOrbit = ({ category, data, onSelectItem, onHoverItem }) => {
                 opacity: localHoveredId && localHoveredId !== item.id ? 0.3 : 1,
                 zIndex: localHoveredId === item.id ? 100 : 30
               }}
-              whileHover={{ scale: 4, rotate: 0, z: 100 }}
+              whileHover={{ scale: hoverScale, rotate: 0, z: 100 }}
               onMouseEnter={() => { setLocalHoveredId(item.id); onHoverItem(item); }}
               onClick={() => onSelectItem(item)}
             >
-              <div className={`w-[70px] h-[70px] md:w-[85px] md:h-[85px] bg-white rounded-2xl border border-slate-100 shadow-lg overflow-hidden group/item hover:border-brand-primary transition-all cursor-pointer p-1 flex flex-col ${localHoveredId === item.id ? 'shadow-[0_0_60px_rgba(0,163,130,0.8)] border-brand-primary' : ''}`}>
+              <div className={`w-[70px] h-[70px] md:w-[85px] md:h-[85px] bg-white rounded-2xl border border-slate-100 shadow-lg overflow-hidden group/item hover:border-brand-primary transition-all cursor-pointer p-1 flex flex-col ${localHoveredId === item.id ? `${glowShadow} border-brand-primary` : ''}`}>
                 <div className="flex-1 w-full rounded-xl overflow-hidden bg-slate-50 flex items-center justify-center mb-0.5">
                   <img src={item.image || "/coin_cell.png"} alt={item.name} className="w-full h-full object-cover group-hover/item:scale-110 transition-transform duration-500" />
                   <div className="absolute inset-x-1 bottom-1 py-1 px-1 bg-brand-primary rounded-lg shadow-md transition-all duration-300">
@@ -99,9 +109,9 @@ const ProductEcosystem = ({ onOpenCatalog }) => {
   const [catalogData, setCatalogData] = useState(null);
 
   return (
-    <section className="relative w-full bg-white pt-12 pb-24 md:pt-16 md:pb-32" id="ecosystem">
+    <section className="relative w-full bg-white pt-8 pb-12 md:pt-16 md:pb-32" id="ecosystem">
       <div className="max-w-[1600px] mx-auto px-4 md:px-12">
-        <div className="text-center max-w-4xl mx-auto mb-12 md:mb-16">
+        <div className="text-center max-w-4xl mx-auto mb-6 md:mb-16">
           <span className="section-tag">Scientific Infrastructure</span>
           <h2 className="text-5xl md:text-7xl lg:text-9xl font-black text-slate-900 mb-4 leading-[0.8] tracking-tighter uppercase">
             Visual <br /> <span className="text-brand-primary">Catalog</span>
@@ -243,33 +253,45 @@ const ProductEcosystem = ({ onOpenCatalog }) => {
       {/* Deep Detail Modal (Triggered when clicking a specific item) */}
       <AnimatePresence>
         {selectedItem && (
-          <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 md:p-8">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/95 backdrop-blur-xl" onClick={() => setSelectedItem(null)} />
+          <div className="fixed inset-0 z-[10000]">
+            {/* Background Overlay */}
             <motion.div 
-              initial={{ scale: 0.95, opacity: 0, y: 30 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 30 }} 
-              className="relative w-full max-w-6xl bg-white rounded-[40px] md:rounded-[60px] overflow-hidden shadow-6xl flex flex-col md:flex-row max-h-[90vh] overflow-y-auto"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} 
+              className="absolute inset-0 bg-slate-900/95 backdrop-blur-xl" 
+              onClick={() => setSelectedItem(null)} 
+            />
+
+            {/* Perfect Middle Card */}
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0, y: "-40%" }} 
+              animate={{ scale: 1, opacity: 1, y: "-50%" }} 
+              exit={{ scale: 0.9, opacity: 0, y: "-40%" }} 
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="fixed inset-x-0 top-1/2 z-[10001] w-[90%] md:w-[90%] max-w-6xl mx-auto bg-white rounded-3xl md:rounded-[60px] overflow-hidden shadow-6xl flex flex-col md:flex-row max-h-[60vh] md:max-h-[85vh]"
             >
-              <button onClick={() => setSelectedItem(null)} className="absolute top-8 right-8 w-12 h-12 bg-slate-100/80 backdrop-blur-md rounded-full flex items-center justify-center z-50 hover:bg-brand-primary hover:text-white transition-all"><X className="w-6 h-6" /></button>
+              <button onClick={() => setSelectedItem(null)} className="absolute top-4 right-4 md:top-8 md:right-8 w-10 h-10 md:w-12 md:h-12 bg-slate-100/80 backdrop-blur-md rounded-full flex items-center justify-center z-50 hover:bg-brand-primary hover:text-white transition-all">
+                <X className="w-5 h-5 md:w-6 md:h-6" />
+              </button>
               
-              <div className="flex-1 grid grid-cols-1 md:grid-cols-2">
-                <div className="bg-slate-50 p-12 md:p-20 flex items-center justify-center border-b md:border-b-0 md:border-r border-slate-100 relative overflow-hidden">
+              <div className="flex-1 grid grid-cols-1 md:grid-cols-2 h-full overflow-y-auto">
+                <div className="bg-slate-50 p-4 md:p-20 flex items-center justify-center border-b md:border-b-0 md:border-r border-slate-100 relative overflow-hidden h-[120px] md:h-auto">
                   <div className="absolute inset-0 bg-gradient-to-br from-white to-slate-100" />
-                  <div className="relative z-10 w-full aspect-square flex items-center justify-center">
-                    <img src={selectedItem.image || "/coin_cell.png"} alt={selectedItem.name} className="w-full h-full object-contain drop-shadow-5xl transform hover:scale-105 transition-transform duration-700" />
+                  <div className="relative z-10 w-full h-full flex items-center justify-center">
+                    <img src={selectedItem.image || "/coin_cell.png"} alt={selectedItem.name} className="w-full h-full object-contain drop-shadow-5xl" />
                   </div>
                 </div>
-
-                <div className="p-12 md:p-20 flex flex-col justify-center bg-white">
-                  <div className="inline-flex items-center gap-3 px-5 py-2 bg-brand-soft text-brand-primary rounded-full mb-8 w-fit">
-                    <div className="w-2 h-2 bg-brand-primary rounded-full animate-pulse" />
-                    <span className="text-[10px] font-black uppercase tracking-[0.2em]">{selectedItem.code}</span>
+                
+                <div className="p-8 md:p-20 flex flex-col justify-center bg-white h-auto">
+                  <div className="inline-flex items-center gap-3 px-3 py-1 bg-brand-soft text-brand-primary rounded-full mb-2 md:mb-8 w-fit">
+                    <div className="w-1.5 h-1.5 bg-brand-primary rounded-full animate-pulse" />
+                    <span className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em]">{selectedItem.code}</span>
                   </div>
                   
-                  <h2 className="text-4xl md:text-6xl font-black mb-6 text-slate-900 uppercase tracking-tighter leading-[0.9]">{selectedItem.name}</h2>
-                  <p className="text-xl text-slate-500 mb-10 leading-relaxed font-bold">{selectedItem.desc}</p>
+                  <h2 className="text-lg md:text-6xl font-black mb-2 md:mb-6 text-slate-900 uppercase tracking-tighter leading-[0.9]">{selectedItem.name}</h2>
+                  <p className="text-sm md:text-xl text-slate-500 mb-4 md:mb-10 leading-relaxed font-bold">{selectedItem.desc}</p>
 
                   <div className="flex flex-col gap-4 mt-auto">
-                    <button onClick={() => { setSelectedItem(null); setShowFullCatalog(false); window.location.href = '#contact'; }} className="w-full py-6 bg-brand-primary text-white rounded-2xl font-black uppercase text-xs tracking-[0.2em] hover:bg-slate-900 transition-all shadow-xl shadow-brand-primary/20">
+                    <button onClick={() => { setSelectedItem(null); setShowFullCatalog(false); window.location.href = '#contact'; }} className="w-full py-4 md:py-6 bg-brand-primary text-white rounded-xl md:rounded-2xl font-black uppercase text-[10px] md:text-xs tracking-normal md:tracking-[0.2em] shadow-xl shadow-brand-primary/20">
                       Request Technical Inquiry
                     </button>
                   </div>

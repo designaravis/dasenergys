@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  ArrowRight, ChevronRight, Mail, Phone, MapPin, Send,
+import {
+  ArrowLeft, ArrowRight, ChevronRight, Mail, Phone, MapPin, Send,
   Globe, ArrowUpRight, CheckCircle2, ShieldCheck, Zap, Activity, Settings, Factory,
   Search, Menu, X as CloseIcon, BarChart3, FlaskConical, Wrench
 } from 'lucide-react';
+// --- Social Icons (Direct SVGs to prevent whitescreen) ---
+const LinkedInIcon = () => (<svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" /></svg>);
+const YoutubeIcon = () => (<svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" /></svg>);
+const InstagramIcon = () => (<svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" /></svg>);
+const FacebookIcon = () => (<svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" /></svg>);
+
 import ProductEcosystem from './components/ProductEcosystem';
 import MaterialNavigation from './components/MaterialNavigation';
 import CatalogPage from './pages/Catalog';
@@ -20,6 +26,7 @@ const Container = ({ children, className = "" }) => (
 const Navbar = ({ searchTerm, setSearchTerm }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
@@ -36,6 +43,8 @@ const Navbar = ({ searchTerm, setSearchTerm }) => {
   const handleSuggestionClick = (name) => {
     setSearchTerm(name);
     setShowSuggestions(false);
+    setIsMobileSearchOpen(false);
+    setIsMobileMenuOpen(false);
     const element = document.getElementById(`product-${name.replace(/\s+/g, '-').toLowerCase()}`);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -43,130 +52,153 @@ const Navbar = ({ searchTerm, setSearchTerm }) => {
   };
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-[1000] transition-all duration-500 ${isScrolled ? 'bg-white/80 backdrop-blur-xl border-b-2 border-emerald-200 shadow-lg py-1.5' : 'bg-transparent border-b border-brand-primary/20 shadow-none py-2 md:py-4'}`}>
-      <div className={`w-full px-8 md:px-24 flex items-center h-full transition-all duration-500 ${isScrolled ? 'justify-start gap-10 md:gap-20' : 'justify-between'}`}>
-        <div className="relative w-32 md:w-48 h-12 flex items-center">
+    <nav className={`fixed top-0 left-0 right-0 z-[1000] transition-all duration-500 ${isScrolled ? 'bg-white/90 backdrop-blur-xl border-b-2 border-emerald-200 shadow-lg py-1.5' : 'bg-transparent border-b border-brand-primary/20 shadow-none py-2 md:py-4'}`}>
+      <div className={`w-full px-4 md:px-24 flex items-center h-full transition-all duration-500 justify-between`}>
+        {/* Logo Section */}
+        <div className="relative w-32 md:w-64 h-12 flex items-center">
           <a href="/" className="absolute top-1/2 -translate-y-1/2 left-0 z-50 transition-all duration-500">
-            <img 
-              src="/logo_official.png" 
-              alt="DAS Energy's Logo" 
-              className={`object-contain mix-blend-multiply transition-all duration-500 drop-shadow-xl ${isScrolled ? 'h-24 md:h-36' : 'h-32 md:h-56'}`}
+            <img
+              src="/logo_official.svg"
+              alt="DAS Energy's Logo"
+              className={`object-contain mix-blend-multiply transition-all duration-500 drop-shadow-xl ${isScrolled ? 'h-20 md:h-48' : 'h-32 md:h-72'}`}
             />
           </a>
         </div>
 
-        {/* Dynamic Navigation Links (Move to left on scroll) */}
-        <div className={`hidden lg:flex gap-3 transition-all duration-500 ${!isScrolled ? 'order-2' : 'order-1'}`}>
-          {['About', 'Ecosystem', 'Products', 'Services', 'Blog', 'Contact'].map((item) => (
+        {/* Desktop Navigation Links */}
+        <div className={`hidden lg:flex gap-3 transition-all duration-500`}>
+          {['About', 'Ecosystem', 'Products', 'Services', 'Blog'].map((item) => (
             <a key={item} href={`#${item.toLowerCase()}`} className={`nav-badge transition-all duration-500 ${isScrolled ? 'text-[10px] px-3 py-1' : 'text-[12px] px-5 py-2'}`}>
               {item}
             </a>
           ))}
         </div>
 
-        <div className={`flex items-center gap-6 transition-all duration-500 ${!isScrolled ? 'order-3' : 'order-2 ml-auto'}`}>
-          {/* Futuristic High-Intelligence Global Search */}
-          <div className="relative max-w-[400px]">
-            <motion.div className="relative group w-full">
-              <div className={`relative flex items-center bg-white border-2 rounded-2xl px-5 py-2 w-full transition-all duration-300 ${isFocused ? 'border-brand-primary shadow-sm' : 'border-emerald-100'}`}>
-                <Search className={`w-4 h-4 mr-3 transition-colors ${isFocused ? 'text-brand-primary' : 'text-slate-400'}`} />
-                <input 
-                  type="text"
-                  value={searchTerm}
-                  onFocus={() => { setIsFocused(true); setShowSuggestions(true); }}
-                  onBlur={() => setTimeout(() => { setIsFocused(false); setShowSuggestions(false); }, 200)}
-                  onChange={(e) => {
-                    setSearchTerm(e.target.value);
-                    setShowSuggestions(true);
-                    if (e.target.value.length > 0) {
-                      const element = document.getElementById('products');
-                      if (element) element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }
-                  }}
-                  placeholder="Search R&D Equipments..."
-                  className={`bg-transparent w-full outline-none placeholder:text-slate-400 uppercase tracking-[0.1em] transition-all duration-500 font-medium text-slate-900 ${isScrolled ? 'text-[10px]' : 'text-[12px]'}`}
-                />
-                
-                <AnimatePresence>
-                  {searchTerm && (
-                    <motion.button
-                      initial={{ opacity: 0, scale: 0.5 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.5 }}
-                      onClick={() => setSearchTerm("")}
-                      className="ml-2 text-slate-400 hover:text-slate-900"
-                    >
-                      <CloseIcon className="w-4 h-4" />
-                    </motion.button>
-                  )}
-                </AnimatePresence>
-              </div>
+        {/* Action Controls */}
+        <div className="flex items-center gap-2 md:gap-6">
+          {/* Desktop Search Bar */}
+          <div className="hidden md:block relative max-w-[300px] lg:max-w-[400px]">
+            <div className={`relative flex items-center bg-white border-2 rounded-2xl px-5 py-2 w-full transition-all duration-300 ${isFocused ? 'border-brand-primary shadow-sm' : 'border-emerald-100'}`}>
+              <Search className={`w-4 h-4 mr-3 transition-colors ${isFocused ? 'text-brand-primary' : 'text-slate-400'}`} />
+              <input
+                type="text"
+                value={searchTerm}
+                onFocus={() => { setIsFocused(true); setShowSuggestions(true); }}
+                onBlur={() => setTimeout(() => { setIsFocused(false); setShowSuggestions(false); }, 200)}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search Equipment..."
+                className="bg-transparent w-full outline-none placeholder:text-slate-400 uppercase tracking-[0.1em] font-medium text-slate-900 text-[10px] lg:text-[12px]"
+              />
 
-              {/* Autocomplete Dropdown */}
               <AnimatePresence>
-                {showSuggestions && searchTerm.length > 0 && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className="absolute top-full left-0 right-0 mt-3 bg-white/95 backdrop-blur-2xl rounded-3xl border-2 border-slate-100 shadow-[0_20px_60px_rgba(0,0,0,0)] overflow-hidden z-[2000]"
-                  >
-                    {suggestions.length > 0 ? (
-                      <div className="p-2">
-                        {suggestions.map((p) => (
-                          <button
-                            key={p.id}
-                            onClick={() => handleSuggestionClick(p.name)}
-                            className="w-full flex items-center gap-4 p-4 hover:bg-slate-50 rounded-2xl transition-all group text-left border-b border-slate-50 last:border-0"
-                          >
-                            <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400 group-hover:text-brand-primary group-hover:bg-brand-soft transition-colors">
-                              {p.icon}
-                            </div>
-                            <div>
-                              <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-0.5">{p.code}</div>
-                              <div className="text-sm font-bold text-slate-900 group-hover:text-brand-primary">
-                                {p.name.split(new RegExp(`(${searchTerm})`, 'gi')).map((part, i) => (
-                                  part.toLowerCase() === searchTerm.toLowerCase() 
-                                    ? <span key={i} className="text-brand-primary bg-brand-soft px-0.5">{part}</span>
-                                    : <span key={part+i}>{part}</span>
-                                ))}
-                              </div>
-                            </div>
-                          </button>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="p-8 text-center">
-                        <Search className="w-10 h-10 text-slate-100 mx-auto mb-4" />
-                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">No equipment found</p>
-                      </div>
-                    )}
-                  </motion.div>
+                {searchTerm && (
+                  <button onClick={() => setSearchTerm("")} className="ml-2 text-slate-400 hover:text-slate-900">
+                    <CloseIcon className="w-4 h-4" />
+                  </button>
                 )}
               </AnimatePresence>
-            </motion.div>
+            </div>
+
+            {/* Desktop Suggestions */}
+            <AnimatePresence>
+              {showSuggestions && searchTerm.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  className="absolute top-full left-0 right-0 mt-3 bg-white rounded-3xl border-2 border-slate-100 shadow-2xl overflow-hidden z-[2000] w-[350px]"
+                >
+                  {suggestions.map((p) => (
+                    <button key={p.id} onClick={() => handleSuggestionClick(p.name)} className="w-full flex items-center gap-4 p-4 hover:bg-slate-50 text-left border-b border-slate-50 last:border-0">
+                      <div className="text-sm font-bold text-slate-900">{p.name}</div>
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
-          <a href="#contact" className={`hidden sm:block bg-brand-primary text-white rounded-full font-medium uppercase tracking-[0.1em] hover:bg-slate-900 transition-all duration-500 shadow-xl shadow-brand-primary/20 whitespace-nowrap ${isScrolled ? 'px-5 py-2 text-[10px]' : 'px-8 md:px-10 py-3 text-[12px]'}`}>
+          {/* Mobile Search Toggle */}
+          <button onClick={() => setIsMobileSearchOpen(true)} className="md:hidden p-3 bg-white rounded-xl text-slate-900 shadow-sm border border-emerald-100">
+            <Search className="w-5 h-5" />
+          </button>
+
+          {/* Get Quote (Desktop) */}
+          <a href="#contact" className="hidden sm:block bg-brand-primary text-white rounded-full font-black uppercase tracking-[0.1em] px-8 py-3 text-[10px] hover:bg-slate-900 transition-all shadow-xl shadow-brand-primary/20 whitespace-nowrap">
             Get Quote
           </a>
+
+          {/* Mobile Menu Toggle */}
           <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="lg:hidden p-3 bg-white rounded-xl text-slate-900 shadow-sm border border-emerald-100">
-            {isMobileMenuOpen ? <CloseIcon /> : <Menu />}
+            {isMobileMenuOpen ? <CloseIcon className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
       </div>
+
+      {/* Mobile Search Overlay */}
+      <AnimatePresence>
+        {isMobileSearchOpen && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[2000] bg-white p-6 flex flex-col"
+          >
+            <div className="flex items-center gap-4 mb-8">
+              <div className="flex-1 relative flex items-center bg-slate-50 border-2 border-brand-primary/20 rounded-2xl px-5 py-4">
+                <Search className="w-5 h-5 mr-3 text-brand-primary" />
+                <input
+                  autoFocus
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="SEARCH EQUIPMENT..."
+                  className="bg-transparent w-full outline-none font-bold text-slate-900"
+                />
+              </div>
+              <button onClick={() => setIsMobileSearchOpen(false)} className="p-4 bg-slate-100 rounded-2xl">
+                <CloseIcon className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto">
+              {suggestions.map((p) => (
+                <button key={p.id} onClick={() => handleSuggestionClick(p.name)} className="w-full flex items-center gap-4 py-6 border-b border-slate-100 text-left">
+                  <div className="w-12 h-12 bg-brand-soft rounded-xl flex items-center justify-center text-brand-primary">
+                    {p.icon}
+                  </div>
+                  <div>
+                    <div className="text-[10px] font-black text-slate-400 uppercase mb-1">{p.code}</div>
+                    <div className="text-lg font-black text-slate-900">{p.name}</div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Mobile Menu Overlay */}
       <AnimatePresence>
         {isMobileMenuOpen && (
-          <motion.div 
-            initial={{ opacity: 0, y: -20 }} 
-            animate={{ opacity: 1, y: 0 }} 
-            exit={{ opacity: 0, y: -20 }} 
-            className="lg:hidden absolute top-full left-0 right-0 bg-white border-b-4 border-brand-primary shadow-2xl p-8 flex flex-col gap-6 font-black text-xs uppercase tracking-widest text-slate-900"
+          <motion.div
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 50 }}
+            className="lg:hidden fixed inset-0 top-[60px] z-[1500] bg-white/95 backdrop-blur-2xl p-10 flex flex-col gap-8 shadow-2xl"
           >
-            {['About', 'Ecosystem', 'Products', 'Services', 'Blog', 'Contact'].map((item) => (
-              <a key={item} href={`#${item.toLowerCase()}`} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-brand-primary">{item}</a>
-            ))}
+            <div className="flex flex-col gap-6 font-black text-xl uppercase tracking-tighter text-slate-900">
+              {['About', 'Ecosystem', 'Products', 'Services', 'Blog'].map((item) => (
+                <a key={item} href={`#${item.toLowerCase()}`} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-brand-primary transition-colors">{item}</a>
+              ))}
+            </div>
+            <div className="mt-auto flex flex-col gap-4">
+              <a href="#contact" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-6 bg-brand-primary text-white rounded-3xl font-black uppercase text-center text-sm tracking-widest shadow-2xl shadow-brand-primary/30">
+                Get Quote Now
+              </a>
+              <div className="flex justify-center gap-6 text-slate-400">
+                <Phone className="w-6 h-6" />
+                <Mail className="w-6 h-6" />
+              </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -176,7 +208,7 @@ const Navbar = ({ searchTerm, setSearchTerm }) => {
 
 // --- Hero (Upgraded: Dynamic Backdrop) ---
 const Hero = () => (
-  <section className="relative pt-48 pb-12 md:pt-64 md:pb-16 bg-white overflow-hidden">
+  <section className="relative pt-32 pb-8 md:pt-50 md:pb-16 bg-white overflow-hidden">
     {/* Animated background elements */}
     <div className="absolute top-20 right-[-10%] w-[50%] h-[80%] bg-brand-soft rounded-full blur-[150px] opacity-60 animate-pulse-slow" />
     <div className="absolute bottom-[-10%] left-[-5%] w-[40%] h-[60%] bg-slate-50 rounded-full blur-[120px] opacity-40" />
@@ -188,11 +220,11 @@ const Hero = () => (
             <div className="w-2 h-2 bg-brand-light rounded-full animate-ping" />
             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white">Advanced R&D Solutions</span>
           </div>
-          <h1 className="text-5xl md:text-7xl lg:text-9xl font-black text-slate-900 leading-[0.85] mb-10 tracking-tighter">
+          <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-9xl font-black text-slate-900 leading-[0.85] mb-10 tracking-tighter">
             Energizing <br />
             <span className="text-brand-primary">Innovation</span>
           </h1>
-          <p className="text-xl md:text-2xl text-slate-700 max-w-xl mb-14 leading-relaxed font-bold">
+          <p className="text-lg md:text-2xl text-slate-700 max-w-xl mb-14 leading-relaxed font-bold">
             DAS Energy's is the global leader in providing next-generation fabrication equipment for battery, fuel cell, and solar research.
           </p>
           <div className="flex flex-wrap gap-6">
@@ -204,9 +236,9 @@ const Hero = () => (
             </a>
           </div>
         </motion.div>
-        
+
         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8, delay: 0.3 }} className="relative">
-          <div className="relative z-10 p-12 md:p-20 bg-white rounded-[64px] shadow-4xl border-4 border-slate-50 overflow-hidden group">
+          <div className="relative z-10 p-6 md:p-20 bg-white rounded-[40px] md:rounded-[64px] shadow-4xl border-4 border-slate-50 overflow-hidden group">
             <div className="absolute inset-0 bg-brand-soft opacity-0 group-hover:opacity-100 transition-all duration-700 -z-10" />
             <img src="/coin_cell.svg" alt="Featured Instrument" className="w-full h-full object-contain animate-float drop-shadow-3xl" />
           </div>
@@ -260,7 +292,7 @@ const About = () => (
             { t: "Custom", d: "Tailored process automation for unique needs.", i: <Settings />, c: "bg-white sm:mt-[-30px]" },
             { t: "Technical", d: "24/7 technical consultancy and maintenance.", i: <Activity />, c: "bg-white" }
           ].map((item, i) => (
-            <div key={i} className={`p-10 rounded-[32px] border-4 border-slate-200 shadow-xl ${item.c}`}>
+            <div key={i} className={`p-6 md:p-10 rounded-[32px] border-4 border-slate-200 shadow-xl ${item.c}`}>
               <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-8 ${item.c.includes('primary') ? 'bg-white text-brand-primary shadow-2xl' : 'bg-brand-soft text-brand-primary'}`}>
                 {item.i}
               </div>
@@ -269,11 +301,11 @@ const About = () => (
             </div>
           ))}
         </div>
-        
+
         <div>
           <span className="section-tag">Our Identity</span>
           <h2 className="text-5xl md:text-7xl font-black text-slate-900 mb-10 leading-[0.9] tracking-tighter uppercase">
-            Pioneering the <br /> 
+            Pioneering the <br />
             <span className="text-brand-primary">Precision</span> Era
           </h2>
           <div className="flex items-center gap-6 mb-10">
@@ -295,9 +327,75 @@ const About = () => (
   </section>
 );
 
+// --- Trusted Partners (Premium Carousel) ---
+const TrustedPartners = () => {
+  const logos = [
+    { src: '/IIT DELHI.svg', alt: 'IIT Delhi' },
+    { src: '/IIT BANGALORE.svg', alt: 'IIT Bangalore' },
+    { src: '/RAJALAKSHMI ENGINEERING COLLEGE.svg', alt: 'Rajalakshmi Engineering College' },
+    { src: '/CALICUT UNIVERSITY.svg', alt: 'Calicut University' },
+    { src: '/ANNA UNIVERSITY.svg', alt: 'Anna University' },
+    { src: '/IIT BOMBAY.svg', alt: 'IIT Bombay' },
+    { src: '/SATYABAMA UNIVERSITY.svg', alt: 'Satyabama University' },
+    { src: '/VELS.svg', alt: 'Vels' },
+    { src: '/IIT PALAKKAD.svg', alt: 'IIT Palakkad' },
+    { src: '/IIT MADRAS.svg', alt: 'IIT Madras' },
+    { src: '/IIT KOTTAYAM.svg', alt: 'IIT Kottayam' },
+    { src: '/IIT KHARAGPUR.svg', alt: 'IIT Kharagpur' },
+    // Duplicate for infinite scroll
+    { src: '/IIT DELHI.svg', alt: 'IIT Delhi' },
+    { src: '/IIT BANGALORE.svg', alt: 'IIT Bangalore' },
+    { src: '/RAJALAKSHMI ENGINEERING COLLEGE.svg', alt: 'Rajalakshmi Engineering College' },
+    { src: '/CALICUT UNIVERSITY.svg', alt: 'Calicut University' },
+    { src: '/ANNA UNIVERSITY.svg', alt: 'Anna University' },
+    { src: '/IIT BOMBAY.svg', alt: 'IIT Bombay' },
+    { src: '/SATYABAMA UNIVERSITY.svg', alt: 'Satyabama University' },
+    { src: '/VELS.svg', alt: 'Vels' },
+    { src: '/IIT PALAKKAD.svg', alt: 'IIT Palakkad' },
+    { src: '/IIT MADRAS.svg', alt: 'IIT Madras' },
+    { src: '/IIT KOTTAYAM.svg', alt: 'IIT Kottayam' },
+    { src: '/IIT KHARAGPUR.svg', alt: 'IIT Kharagpur' },
+  ];
+
+  return (
+    <section className="pt-12 pb-0 bg-white overflow-hidden relative" id="partners">
+      <div className="text-center max-w-4xl mx-auto mb-8 px-4">
+        <h2 className="text-3xl md:text-5xl font-black text-slate-900 uppercase tracking-tighter mb-4">
+          Trusted by <span className="text-brand-primary">Industry Leaders</span>
+        </h2>
+        <p className="text-lg text-slate-500 font-bold">
+          Accelerating global energy innovation through strategic partnerships.
+        </p>
+      </div>
+
+      <div className="relative overflow-hidden w-full py-6">
+        {/* Edge Fades for Seamless Look */}
+        <div className="absolute top-0 left-0 w-32 h-full bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+        <div className="absolute top-0 right-0 w-32 h-full bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
+
+        <motion.div
+          className="flex items-center gap-16 w-max"
+          animate={{ x: [0, -2000] }}
+          transition={{ repeat: Infinity, duration: 40, ease: "linear" }}
+        >
+          {/* Triple the logos for a truly seamless full-width infinite scroll */}
+          {[...logos, ...logos, ...logos].map((logo, index) => (
+            <div
+              key={index}
+              className="flex-shrink-0 bg-white border-2 border-slate-100 rounded-3xl shadow-sm hover:border-brand-primary hover:shadow-md hover:scale-105 transition-all duration-500 cursor-pointer p-2 md:p-4 hover:z-20 relative"
+            >
+              <img src={logo.src} alt={logo.alt} className="h-24 md:h-40 object-contain" />
+            </div>
+          ))}
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+
 // --- Product Grid (Now Globally Filtered) ---
 const ProductGrid = ({ searchTerm }) => {
-  const filteredProducts = coreProducts.filter(p => 
+  const filteredProducts = coreProducts.filter(p =>
     p.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -306,7 +404,7 @@ const ProductGrid = ({ searchTerm }) => {
       {/* Subtle Technical Backdrop Elements */}
       <div className="absolute top-0 right-0 w-[40%] h-[40%] bg-emerald-100/20 rounded-full blur-[120px] -z-10" />
       <div className="absolute bottom-0 left-0 w-[30%] h-[30%] bg-emerald-100/20 rounded-full blur-[100px] -z-10" />
-      
+
       <Container>
         <div className="text-center max-w-4xl mx-auto mb-24">
           <span className="section-tag">Scientific Catalog</span>
@@ -315,46 +413,46 @@ const ProductGrid = ({ searchTerm }) => {
           </h2>
           <p className="text-2xl text-slate-600 font-bold mb-12">High-performance instrumentation engineered for extreme accuracy.</p>
         </div>
-        
+
         <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 min-h-[300px]">
           <AnimatePresence mode="popLayout">
             {filteredProducts.length > 0 ? (
               filteredProducts.map((product, i) => (
-                <motion.div 
+                <motion.div
                   key={product.id}
                   id={`product-${product.name.replace(/\s+/g, '-').toLowerCase()}`}
                   layout
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
-                  whileHover={{ y: -5 }} 
+                  whileHover={{ y: -5 }}
                   className="bg-white p-4 rounded-[20px] border-2 border-slate-100 shadow-[0_8px_20px_rgba(16,185,129,0.04)] flex flex-col h-full hover:border-brand-primary hover:shadow-[0_20px_40px_rgba(16,185,129,0.08)] transition-all group overflow-hidden relative"
                 >
                   <div className="aspect-square bg-slate-50 rounded-lg p-3 mb-3 flex items-center justify-center border border-slate-100 group-hover:bg-white transition-all duration-500 overflow-hidden">
                     <img src={product.image} alt={product.name} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700" />
                   </div>
-                  
+
                   <div className="flex-1 flex flex-col">
                     <div className="flex justify-between items-start mb-1">
                       <span className="text-[7px] font-black text-brand-primary uppercase tracking-[0.2em]">{product.code}</span>
                       <div className="w-1 h-1 bg-slate-200 rounded-full group-hover:bg-brand-primary transition-colors" />
                     </div>
-                    
+
                     <h3 className="text-base font-black mb-1 text-slate-900 tracking-tight leading-tight group-hover:text-brand-primary transition-colors">
                       {product.name}
                     </h3>
-                    
+
                     <p className="text-slate-500 text-[10px] mb-3 flex-grow leading-relaxed font-bold opacity-80 line-clamp-2">
                       {product.description}
                     </p>
-                    
+
                     <div className="pt-2 border-t border-slate-50 flex justify-between items-center mb-4">
                       <span className="text-[7px] font-black text-slate-400 uppercase tracking-widest">Performance</span>
                       <span className="text-[7px] font-black text-slate-900 uppercase tracking-widest bg-slate-100 px-1.5 py-0.5 rounded-sm">
                         {product.specs}
                       </span>
                     </div>
- 
+
                     <a href="#contact" className="w-full py-2.5 bg-emerald-900 text-white rounded-md text-[10px] font-black uppercase tracking-[0.2em] hover:bg-brand-primary transition-all text-center">
                       Inquire Spec
                     </a>
@@ -362,7 +460,7 @@ const ProductGrid = ({ searchTerm }) => {
                 </motion.div>
               ))
             ) : (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 className="col-span-full py-20 text-center"
@@ -381,22 +479,47 @@ const ProductGrid = ({ searchTerm }) => {
   );
 };
 
-// --- Blog (Dynamic Section) ---
+// --- Blog (Dynamic with Full Content & Images) ---
 const Blog = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedPost, setSelectedPost] = useState(null);
 
   useEffect(() => {
-    // Simulating a fetch from an external source/CMS
     const fetchPosts = async () => {
       try {
-        // You can replace this with your actual API endpoint later
-        const response = await import('./data/blogPosts.json');
-        setPosts(response.default);
+        const response = await fetch(
+          `https://cdn.contentful.com/spaces/lmooxhcoosfx/environments/master/entries?access_token=hLrd9mzbdWE0cJgY1SWkV_dYY49tJUW7whB8UluzaY0&content_type=blogPost&include=2`
+        );
+        const data = await response.json();
+
+        if (data.items) {
+          const assets = data.includes?.Asset || [];
+          const formattedPosts = data.items.map(item => {
+            const imageId = item.fields.featuredImage?.sys.id;
+            const asset = assets.find(a => a.sys.id === imageId);
+            const imageUrl = asset ? `https:${asset.fields.file.url}` : "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=800";
+
+            return {
+              id: item.sys.id,
+              title: item.fields.title,
+              date: new Date(item.fields.date).toLocaleDateString('en-US', {
+                month: 'long', day: 'numeric', year: 'numeric'
+              }),
+              description: item.fields.content.length > 150
+                ? item.fields.content.substring(0, 150) + "..."
+                : item.fields.content,
+              fullContent: item.fields.content,
+              category: "Technical Paper",
+              image: imageUrl
+            };
+          });
+          setPosts(formattedPosts);
+        }
       } catch (err) {
-        console.error("Failed to fetch blog posts:", err);
+        console.error("Failed to fetch blog posts from Contentful:", err);
       } finally {
-        setTimeout(() => setLoading(false), 800); // Slight delay for smooth animation
+        setLoading(false);
       }
     };
     fetchPosts();
@@ -410,7 +533,7 @@ const Blog = () => {
             <span className="section-tag">Technical Insights</span>
             <h2 className="text-4xl md:text-6xl font-black text-slate-900 leading-[0.9] tracking-tighter uppercase">R&D <br /><span className="text-brand-primary">Knowledge</span> Hub</h2>
           </div>
-          <p className="text-lg text-slate-500 font-bold max-w-sm">Deep dives into the latest energy fabrication technologies and material research.</p>
+          <p className="text-lg text-slate-500 font-bold max-w-sm">Deep dives into the latest energy fabrication technologies.</p>
         </div>
 
         {loading ? (
@@ -421,34 +544,64 @@ const Blog = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {posts.map((p, i) => (
-              <motion.div 
-                key={p.id || i} 
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="group bg-white rounded-[32px] overflow-hidden border-2 border-transparent hover:border-brand-primary transition-all shadow-xl shadow-slate-200/40 flex flex-col h-full"
+            {posts.length > 0 ? posts.map((p, i) => (
+              <motion.article
+                key={p.id}
+                onClick={() => setSelectedPost(p)}
+                whileHover={{ y: -10 }}
+                className="group bg-white rounded-[32px] overflow-hidden border-2 border-transparent hover:border-brand-primary transition-all shadow-xl shadow-slate-200/40 flex flex-col h-full cursor-pointer"
               >
                 <div className="aspect-video overflow-hidden relative">
-                  <img src={p.img} alt={p.t} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                  <img src={p.image} alt={p.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                   <div className="absolute top-6 left-6 bg-white/90 backdrop-blur-md px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest text-brand-primary">
-                    {p.cat}
+                    {p.category}
                   </div>
                 </div>
                 <div className="p-8 flex flex-col flex-1">
                   <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">{p.date}</div>
-                  <h4 className="text-2xl font-black mb-4 text-slate-900 tracking-tighter leading-tight group-hover:text-brand-primary transition-colors">{p.t}</h4>
-                  <p className="text-slate-500 font-bold text-sm leading-relaxed mb-8 flex-grow">{p.d}</p>
-                  <a href="#" className="flex items-center gap-3 text-xs font-black uppercase tracking-widest text-brand-primary group-hover:gap-5 transition-all">
+                  <h4 className="text-2xl font-black mb-4 text-slate-900 tracking-tighter leading-tight group-hover:text-brand-primary transition-colors">{p.title}</h4>
+                  <p className="text-slate-500 font-bold text-sm leading-relaxed mb-8 flex-grow line-clamp-3">{p.description}</p>
+                  <div className="flex items-center gap-3 text-xs font-black uppercase tracking-widest text-brand-primary group-hover:gap-5 transition-all">
                     Read Analysis <ArrowRight className="w-4 h-4" />
-                  </a>
+                  </div>
                 </div>
-              </motion.div>
-            ))}
+              </motion.article>
+            )) : (
+              <div className="col-span-full py-20 text-center bg-white rounded-3xl border-2 border-dashed border-slate-200">
+                <p className="text-slate-400 font-bold uppercase tracking-widest">No technical insights published yet.</p>
+              </div>
+            )}
           </div>
         )}
       </Container>
+
+      {/* Full Post Modal */}
+      <AnimatePresence>
+        {selectedPost && (
+          <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setSelectedPost(null)} className="absolute inset-0 bg-slate-900/95 backdrop-blur-xl" />
+            <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }} className="relative bg-white w-full max-w-4xl max-h-[85vh] rounded-[40px] overflow-hidden shadow-6xl flex flex-col z-10">
+              <button onClick={() => setSelectedPost(null)} className="absolute top-6 right-6 w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center hover:bg-brand-primary hover:text-white transition-all z-50">
+                <CloseIcon className="w-6 h-6" />
+              </button>
+
+              <div className="overflow-y-auto">
+                <div className="h-64 md:h-96 w-full relative">
+                  <img src={selectedPost.image} alt={selectedPost.title} className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent" />
+                </div>
+                <div className="p-8 md:p-16 -mt-20 relative bg-white rounded-t-[40px]">
+                  <div className="text-xs font-black text-brand-primary uppercase tracking-[0.3em] mb-4">{selectedPost.date}</div>
+                  <h2 className="text-3xl md:text-6xl font-black text-slate-900 mb-8 uppercase tracking-tighter leading-none">{selectedPost.title}</h2>
+                  <div className="prose prose-slate max-w-none">
+                    <p className="text-lg md:text-xl text-slate-600 font-bold leading-relaxed whitespace-pre-wrap">{selectedPost.fullContent}</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </section>
   );
 };
@@ -467,7 +620,7 @@ const Contact = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setStatus("sending");
-    
+
     // NOTE: To make this functional, link to a service like EmailJS or Web3Forms
     // For now, we simulate the submission to balamuruganprabakar@gmail.com
     setTimeout(() => {
@@ -484,179 +637,309 @@ const Contact = () => {
   };
 
   return (
-    <section className="py-12 bg-slate-50" id="contact">
-    <Container>
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-        {/* Left Side: Inquiry Form Dashboard */}
-        <div className="lg:col-span-7 bg-white p-8 md:p-10 rounded-[32px] shadow-2xl shadow-slate-200/60 border border-slate-100">
-          <span className="section-tag mb-4">Direct Inquiry</span>
-          <h2 className="text-2xl md:text-3xl font-black mb-6 text-slate-900 leading-tight uppercase tracking-tighter">Request <span className="text-brand-primary">Technical</span> Quote</h2>
-          
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400 ml-2">Full Name</label>
-                <input 
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                  type="text" placeholder="Your Name" className="w-full px-5 py-3 bg-slate-50 border-2 border-slate-50 rounded-xl focus:border-brand-primary focus:bg-white outline-none text-sm text-slate-600 transition-all" 
-                />
+    <section className="pt-12 pb-4 bg-slate-50" id="contact">
+      <Container>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+          {/* Left Side: Inquiry Form Dashboard */}
+          <div className="lg:col-span-7 bg-white p-8 md:p-10 rounded-[32px] shadow-2xl shadow-slate-200/60 border border-slate-100">
+            <span className="section-tag mb-4">Direct Inquiry</span>
+            <h2 className="text-2xl md:text-3xl font-black mb-6 text-slate-900 leading-tight uppercase tracking-tighter">Request <span className="text-brand-primary">Technical</span> Quote</h2>
+
+            <form className="space-y-4" onSubmit={handleSubmit}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400 ml-2">Full Name</label>
+                  <input
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                    type="text" placeholder="Your Name" className="w-full px-5 py-3 bg-slate-50 border-2 border-slate-50 rounded-xl focus:border-brand-primary focus:bg-white outline-none text-sm text-slate-600 transition-all"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400 ml-2">Phone Number</label>
+                  <input
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    required
+                    type="tel" placeholder="+91 00000 00000" className="w-full px-5 py-3 bg-slate-50 border-2 border-slate-50 rounded-xl focus:border-brand-primary focus:bg-white outline-none text-sm text-slate-600 transition-all"
+                  />
+                </div>
               </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400 ml-2">Email Address</label>
+                  <input
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                    type="email" placeholder="research@university.edu" className="w-full px-5 py-3 bg-slate-50 border-2 border-slate-50 rounded-xl focus:border-brand-primary focus:bg-white outline-none text-sm text-slate-600 transition-all"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400 ml-2">Organization</label>
+                  <input
+                    name="university"
+                    value={formData.university}
+                    onChange={handleChange}
+                    required
+                    type="text" placeholder="IIT Madras / R&D Lab" className="w-full px-5 py-3 bg-slate-50 border-2 border-slate-50 rounded-xl focus:border-brand-primary focus:bg-white outline-none text-sm text-slate-600 transition-all"
+                  />
+                </div>
+              </div>
+
               <div className="space-y-2">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400 ml-2">Phone Number</label>
-                <input 
-                  name="phone"
-                  value={formData.phone}
+                <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400 ml-2">Message / Requirements</label>
+                <textarea
+                  name="message"
+                  value={formData.message}
                   onChange={handleChange}
                   required
-                  type="tel" placeholder="+91 00000 00000" className="w-full px-5 py-3 bg-slate-50 border-2 border-slate-50 rounded-xl focus:border-brand-primary focus:bg-white outline-none text-sm text-slate-600 transition-all" 
-                />
+                  rows="3" placeholder="How can we help you?" className="w-full px-5 py-3 bg-slate-50 border-2 border-slate-50 rounded-xl focus:border-brand-primary focus:bg-white outline-none text-sm text-slate-600 transition-all"
+                ></textarea>
+              </div>
+
+              <button
+                type="submit"
+                disabled={status === "sending"}
+                className="w-full py-4 bg-brand-primary text-white rounded-xl text-sm font-black uppercase tracking-widest hover:bg-slate-900 transition-all shadow-xl shadow-brand-primary/20 flex items-center justify-center gap-2 disabled:bg-slate-400"
+              >
+                {status === "sending" ? "Processing..." : status === "success" ? "Inquiry Sent!" : <>Send Inquiry <Send className="w-4 h-4" /></>}
+              </button>
+
+              {status === "success" && (
+                <p className="text-center text-[10px] font-black text-emerald-500 uppercase tracking-widest mt-4">Thank you! Your quote request has been routed.</p>
+              )}
+            </form>
+          </div>
+
+          {/* Right Side: Contact Information Cards */}
+          <div className="lg:col-span-5 space-y-4">
+            <div className="bg-white p-5 md:p-6 rounded-[24px] shadow-xl shadow-slate-200/40 border border-slate-100 flex gap-4 items-center group hover:border-brand-primary transition-all duration-300">
+              <div className="w-12 h-12 bg-brand-soft rounded-xl flex items-center justify-center text-brand-primary group-hover:bg-brand-primary group-hover:text-white transition-all flex-shrink-0">
+                <MapPin className="w-6 h-6" />
+              </div>
+              <div>
+                <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Our Location</div>
+                <div className="text-sm font-bold text-slate-900 leading-tight">No: 15, Balaji Nagar, North Malayambakkam,  Chennai - 600 123.</div>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400 ml-2">Email Address</label>
-                <input 
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  type="email" placeholder="research@university.edu" className="w-full px-5 py-3 bg-slate-50 border-2 border-slate-50 rounded-xl focus:border-brand-primary focus:bg-white outline-none text-sm text-slate-600 transition-all" 
-                />
+            <div className="bg-white p-5 md:p-6 rounded-[24px] shadow-xl shadow-slate-200/40 border border-slate-100 flex gap-4 items-center group hover:border-brand-primary transition-all duration-300">
+              <div className="w-12 h-12 bg-brand-soft rounded-xl flex items-center justify-center text-brand-primary group-hover:bg-brand-primary group-hover:text-white transition-all flex-shrink-0">
+                <Mail className="w-6 h-6" />
               </div>
-              <div className="space-y-2">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400 ml-2">Organization</label>
-                <input 
-                  name="university"
-                  value={formData.university}
-                  onChange={handleChange}
-                  required
-                  type="text" placeholder="IIT Madras / R&D Lab" className="w-full px-5 py-3 bg-slate-50 border-2 border-slate-50 rounded-xl focus:border-brand-primary focus:bg-white outline-none text-sm text-slate-600 transition-all" 
-                />
+              <div>
+                <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Email Address</div>
+                <div className="text-sm font-bold text-slate-900">info.dasenergys@gmail.com</div>
               </div>
             </div>
 
-            <div className="space-y-2">
-              <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400 ml-2">Message / Requirements</label>
-              <textarea 
-                name="message"
-                value={formData.message}
-                onChange={handleChange}
-                required
-                rows="3" placeholder="How can we help you?" className="w-full px-5 py-3 bg-slate-50 border-2 border-slate-50 rounded-xl focus:border-brand-primary focus:bg-white outline-none text-sm text-slate-600 transition-all"
-              ></textarea>
+            <div className="bg-white p-5 md:p-6 rounded-[24px] shadow-xl shadow-slate-200/40 border border-slate-100 flex gap-4 items-center group hover:border-brand-primary transition-all duration-300">
+              <div className="w-12 h-12 bg-brand-soft rounded-xl flex items-center justify-center text-brand-primary group-hover:bg-brand-primary group-hover:text-white transition-all flex-shrink-0">
+                <Phone className="w-6 h-6" />
+              </div>
+              <div>
+                <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Technical Support</div>
+                <div className="text-sm font-bold text-slate-900">+91 88072 43902</div>
+              </div>
             </div>
 
-            <button 
-              type="submit" 
-              disabled={status === "sending"}
-              className="w-full py-4 bg-brand-primary text-white rounded-xl text-sm font-black uppercase tracking-widest hover:bg-slate-900 transition-all shadow-xl shadow-brand-primary/20 flex items-center justify-center gap-2 disabled:bg-slate-400"
-            >
-              {status === "sending" ? "Processing..." : status === "success" ? "Inquiry Sent!" : <>Send Inquiry <Send className="w-4 h-4" /></>}
-            </button>
-            
-            {status === "success" && (
-              <p className="text-center text-[10px] font-black text-emerald-500 uppercase tracking-widest mt-4">Thank you! Your quote request has been routed.</p>
-            )}
-          </form>
+            {/* Interactive Map Card */}
+            <div className="bg-white p-3 rounded-[24px] shadow-xl shadow-slate-200/40 border border-slate-100 overflow-hidden h-[200px]">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3887.010130619079!2d80.0833267!3d13.0350267!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a528b00697c98f5%3A0x651447dc108f4023!2sDas%20Instruments%20and%20Solutions!5e0!3m2!1sen!2sin!4v1715252814838!5m2!1sen!2sin"
+                width="100%" height="100%" style={{ border: 0, borderRadius: '16px' }} allowFullScreen="" loading="lazy"
+              ></iframe>
+            </div>
+
+            {/* Social Media Links */}
+            <div className="flex gap-4 justify-center mt-6">
+              <a href="#" className="w-12 h-12 bg-white rounded-2xl shadow-lg border border-slate-100 flex items-center justify-center text-[#1877F2] hover:border-[#1877F2]/20 hover:shadow-xl transition-all duration-300">
+                <FacebookIcon />
+              </a>
+              <a href="#" className="w-12 h-12 bg-white rounded-2xl shadow-lg border border-slate-100 flex items-center justify-center text-[#0077B5] hover:border-[#0077B5]/20 hover:shadow-xl transition-all duration-300">
+                <LinkedInIcon />
+              </a>
+              <a href="#" className="w-12 h-12 bg-white rounded-2xl shadow-lg border border-slate-100 flex items-center justify-center text-[#FF0000] hover:border-[#FF0000]/20 hover:shadow-xl transition-all duration-300">
+                <YoutubeIcon />
+              </a>
+              <a href="#" className="w-12 h-12 bg-white rounded-2xl shadow-lg border border-slate-100 flex items-center justify-center text-[#E4405F] hover:border-[#E4405F]/20 hover:shadow-xl transition-all duration-300">
+                <InstagramIcon />
+              </a>
+            </div>
+          </div>
+        </div>
+      </Container>
+    </section>
+  );
+};
+
+// --- Footer ---
+const Footer = ({ onNavigate }) => (
+  <footer className="bg-gradient-to-b from-[#f0fdf4] to-[#6ee7b7] text-slate-900 pt-0 pb-12 px-8 relative overflow-hidden">
+    {/* Interchanged Waves: Diagonal now at Bottom, Fluid at Top */}
+    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      {/* Fluid Wave: Right-Top to Left-Middle - Increased Visibility */}
+      <svg className="absolute top-0 right-0 w-full h-full opacity-30" viewBox="0 0 1440 320" fill="none">
+        <path fill="#10b981" fillOpacity="0.4" d="M1440,0 L1440,120 C1200,160 900,80 720,120 C540,160 240,240 0,160 L0,0 Z"></path>
+      </svg>
+      
+      {/* Radial Shade now at Bottom - ULTRA DARK for Visible Contrast */}
+      <svg className="absolute -bottom-24 -right-24 w-[120%] h-[150%] opacity-60 blur-3xl translate-x-1/4 rotate-12" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <circle cx="100" cy="100" r="80" fill="url(#footerGradInv)" />
+        <defs>
+          <radialGradient id="footerGradInv" cx="100%" cy="100%" r="100%">
+            <stop offset="0%" style={{ stopColor: '#000000', stopOpacity: 1 }} />
+            <stop offset="70%" style={{ stopColor: '#000000', stopOpacity: 0.8 }} />
+            <stop offset="100%" style={{ stopColor: '#000000', stopOpacity: 0 }} />
+          </radialGradient>
+        </defs>
+      </svg>
+    </div>
+    <div className="pr-4 md:pr-6 pl-0 md:pl-16">
+      <div className="flex flex-col lg:flex-row justify-between items-start gap-12 lg:gap-10">
+        <div className="flex-shrink-0 flex flex-col items-start gap-0 lg:w-1/2 mt-0 md:mt-[-32px]">
+          <img src="/logo_official.svg" alt="DAS Energy's Logo" className="h-32 md:h-64 mb-0" />
+          <p className="text-sm md:text-lg font-bold text-slate-500 max-w-lg leading-relaxed mt-[-20px] md:mt-[-75px]">
+            DAS Energy’s empowers global energy innovation with next-generation fabrication equipment for battery, fuel cell, and solar research.
+          </p>
         </div>
 
-        {/* Right Side: Contact Information Cards */}
-        <div className="lg:col-span-5 space-y-4">
-          <div className="bg-white p-5 md:p-6 rounded-[24px] shadow-xl shadow-slate-200/40 border border-slate-100 flex gap-4 items-center group hover:border-brand-primary transition-all duration-300">
-            <div className="w-12 h-12 bg-brand-soft rounded-xl flex items-center justify-center text-brand-primary group-hover:bg-brand-primary group-hover:text-white transition-all flex-shrink-0">
-              <MapPin className="w-6 h-6" />
-            </div>
-            <div>
-              <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Our Location</div>
-              <div className="text-sm font-bold text-slate-900 leading-tight">No: 15, Balaji Nagar, North Malayambakkam,  Chennai - 600 123.</div>
-            </div>
+        {/* Center: Make In India Branding */}
+        <div className="flex-shrink-0 pt-12">
+          <img src="/makeinindia.svg" alt="Make In India" className="h-24 md:h-32 object-contain opacity-80" />
+        </div>
+
+        <div className="flex flex-wrap gap-12 lg:gap-24 pt-16 pr-20">
+          <div>
+            <h5 className="font-black text-lg uppercase tracking-[0.3em] mb-4 text-emerald-600">Lines</h5>
+            <ul className="space-y-2 text-lg font-bold text-slate-700">
+              <li><a href="#ecosystem" className="hover:text-emerald-600 transition-colors">Coin Cell</a></li>
+              <li><a href="#ecosystem" className="hover:text-emerald-600 transition-colors">Pouch Cell</a></li>
+              <li><a href="#ecosystem" className="hover:text-emerald-600 transition-colors">Cylindrical</a></li>
+              <li><a href="#ecosystem" className="hover:text-emerald-600 transition-colors">Prismatic</a></li>
+            </ul>
+          </div>
+          <div>
+            <h5 className="font-black text-lg uppercase tracking-[0.3em] mb-4 text-emerald-600">Solutions</h5>
+            <ul className="space-y-2 text-lg font-bold text-slate-700">
+              <li><a href="#services" className="hover:text-emerald-600 transition-colors">Consulting</a></li>
+              <li><a href="#services" className="hover:text-emerald-600 transition-colors">Maintenance</a></li>
+              <li><a href="#contact" className="hover:text-emerald-600 transition-colors">Inquiry</a></li>
+              <li><a href="#blog" className="hover:text-emerald-600 transition-colors">Technical Blog</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-2 pt-2 border-t border-emerald-200/30 flex flex-col md:flex-row justify-between items-center gap-8">
+        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-900/40">© 2026 DAS Energy's. All Rights Reserved.</p>
+        <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 text-[9px] font-black uppercase tracking-[0.2em] text-emerald-900/40">
+          <button onClick={() => onNavigate('privacy')} className="hover:text-emerald-600 transition-all duration-300 uppercase">Privacy Policy</button>
+          <button onClick={() => onNavigate('terms')} className="hover:text-emerald-600 transition-all duration-300 uppercase">Terms of Service</button>
+          <button onClick={() => onNavigate('cookies')} className="hover:text-emerald-600 transition-all duration-300 uppercase">Cookie Policy</button>
+          <button onClick={() => onNavigate('compliance')} className="hover:text-emerald-600 transition-all duration-300 uppercase">Compliance</button>
+          <button onClick={() => onNavigate('disclaimer')} className="hover:text-emerald-600 transition-all duration-300 uppercase">Disclaimer</button>
+        </div>
+      </div>
+    </div>
+  </footer>
+);
+
+// --- Legal Page ---
+const LegalPage = ({ type, onBack }) => {
+  const content = {
+    privacy: {
+      title: "Privacy Policy",
+      body: "DAS Energy's is committed to protecting the privacy of our research and industrial partners. We collect minimal personal data through inquiry forms solely for the purpose of providing technical quotes and equipment support. We employ industry-standard security measures, including end-to-end encryption and secure database management, to safeguard your institutional data. Your information is never sold, traded, or disclosed to third-party marketing entities without explicit consent. We comply with global data protection regulations to ensure your research privacy is maintained at every stage of collaboration."
+    },
+    terms: {
+      title: "Terms of Service",
+      body: "Use of the DAS Energy's portal is subject to our professional service standards and industrial agreements. All intellectual property, including equipment designs, technical specifications, CAD models, and branding assets, are the exclusive property of DAS Energy's. Users are prohibited from unauthorized reproduction or distribution of technical data obtained through this portal. We reserve the right to update technical specifications and service terms without prior notice to reflect engineering advancements and regulatory changes. All technical inquiries and quotes provided are subject to our final sales and distribution agreements."
+    },
+    cookies: {
+      title: "Cookie Policy",
+      body: "Our portal uses essential and performance cookies to optimize the user experience of our scientific equipment catalog and inquiry management system. These cookies allow us to maintain your search preferences, ensure secure session management, and analyze portal traffic to improve our technical content delivery. By using our site, you consent to the use of these necessary cookies. You may manage or disable cookies through your browser settings, though some functional features of the equipment catalog may be affected. We do not use tracking cookies for third-party advertising purposes."
+    },
+    compliance: {
+      title: "Compliance Statement",
+      body: "DAS Energy's operates in full compliance with international standards for scientific equipment manufacturing and distribution. We adhere to rigorous safety protocols, environmental regulations, and quality management systems (ISO 9001/14001 equivalent standards). Our manufacturing partners maintain strict certifications for electronics waste management and sustainable fabrication practices. We are committed to meeting rigorous laboratory safety protocols and ensure all equipment meets global scientific manufacturing standards before distribution."
+    },
+    disclaimer: {
+      title: "Disclaimer",
+      body: "All technical information provided on this portal is for informational purposes and is based on standard laboratory conditions and engineering simulations. Actual equipment performance may vary depending on specific research environments, material purity, and laboratory integration. DAS Energy's assumes no liability for research outcomes, project delays, or incidental damages resulting from the use of the information or equipment provided. It is the user's responsibility to verify equipment compatibility with their specific research requirements before purchase. Technical data is provided 'as is' and is subject to engineering revisions."
+    }
+  };
+
+  const active = content[type] || content.privacy;
+
+  return (
+    <div className="min-h-screen bg-slate-50 pt-32 pb-20 px-8">
+      <Container>
+        <button
+          onClick={onBack}
+          className="flex items-center gap-2 text-brand-primary font-black uppercase tracking-widest mb-12 hover:gap-4 transition-all"
+        >
+          <ArrowLeft className="w-5 h-5" /> Back to Home
+        </button>
+        <div className="bg-white border-2 border-slate-100 rounded-[40px] p-12 shadow-2xl max-w-4xl">
+          <h1 className="text-4xl md:text-6xl font-black text-slate-900 uppercase tracking-tighter mb-8">
+            {active.title}
+          </h1>
+          <div className="h-1 w-24 bg-brand-primary mb-12 rounded-full" />
+          <p className="text-xl text-slate-600 font-bold leading-relaxed whitespace-pre-line">
+            {active.body}
+          </p>
+        </div>
+      </Container>
+    </div>
+  );
+};
+
+// --- Our Associates ---
+const OurAssociates = () => (
+  <section className="pt-6 pb-6 bg-white border-t border-slate-100" id="associates">
+    <Container>
+      <div className="text-center mb-10">
+        <h2 className="text-3xl md:text-5xl font-black text-slate-900 uppercase tracking-tighter">
+          Our <span className="text-emerald-600">Associates</span>
+        </h2>
+        <div className="h-1 w-24 bg-emerald-600 mx-auto mt-4 rounded-full" />
+        <p className="text-sm md:text-lg font-black text-slate-500 uppercase tracking-[0.3em] mt-6">
+          WE PARTNER WITH WORLD'S BEST SCIENTIFIC EQUIPMENT MANUFACTURERS
+        </p>
+      </div>
+
+      <div className="bg-white border-2 border-slate-100 rounded-[40px] shadow-[0_40px_80px_rgba(0,163,130,0.15),0_10px_25px_rgba(0,0,0,0.08)] py-8 px-12 mt-6 max-w-6xl mx-auto overflow-hidden">
+        <div className="flex flex-wrap justify-center items-center gap-8 lg:gap-16">
+          <div className="h-20 md:h-32 flex items-center justify-center p-2 rounded-xl hover:bg-emerald-50 transition-colors cursor-pointer shrink-0">
+            <img src="/chino.svg" alt="Chino" className="h-full object-contain" />
           </div>
 
-          <div className="bg-white p-5 md:p-6 rounded-[24px] shadow-xl shadow-slate-200/40 border border-slate-100 flex gap-4 items-center group hover:border-brand-primary transition-all duration-300">
-            <div className="w-12 h-12 bg-brand-soft rounded-xl flex items-center justify-center text-brand-primary group-hover:bg-brand-primary group-hover:text-white transition-all flex-shrink-0">
-              <Mail className="w-6 h-6" />
-            </div>
-            <div>
-              <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Email Address</div>
-              <div className="text-sm font-bold text-slate-900">info.dasenergys@gmail.com</div>
-            </div>
+          <div className="h-20 md:h-32 flex items-center justify-center p-2 rounded-xl hover:bg-emerald-50 transition-colors cursor-pointer shrink-0">
+            <img src="/RADBEE.svg" alt="Radbee" className="h-full object-contain" />
           </div>
 
-          <div className="bg-white p-5 md:p-6 rounded-[24px] shadow-xl shadow-slate-200/40 border border-slate-100 flex gap-4 items-center group hover:border-brand-primary transition-all duration-300">
-            <div className="w-12 h-12 bg-brand-soft rounded-xl flex items-center justify-center text-brand-primary group-hover:bg-brand-primary group-hover:text-white transition-all flex-shrink-0">
-              <Phone className="w-6 h-6" />
-            </div>
-            <div>
-              <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Technical Support</div>
-              <div className="text-sm font-bold text-slate-900">+91 88072 43902</div>
-            </div>
+          <div className="h-20 md:h-32 flex items-center justify-center p-2 rounded-xl hover:bg-emerald-50 transition-colors cursor-pointer shrink-0">
+            <img src="/ZX.svg" alt="ZX" className="h-full object-contain" />
           </div>
 
-          {/* Interactive Map Card */}
-          <div className="bg-white p-3 rounded-[24px] shadow-xl shadow-slate-200/40 border border-slate-100 overflow-hidden h-[200px]">
-            <iframe 
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3887.010130619079!2d80.0833267!3d13.0350267!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a528b00697c98f5%3A0x651447dc108f4023!2sDas%20Instruments%20and%20Solutions!5e0!3m2!1sen!2sin!4v1715252814838!5m2!1sen!2sin" 
-              width="100%" height="100%" style={{ border: 0, borderRadius: '16px' }} allowFullScreen="" loading="lazy"
-            ></iframe>
+          <div className="h-20 md:h-32 flex items-center justify-center p-2 rounded-xl hover:bg-emerald-50 transition-colors cursor-pointer shrink-0">
+            <img src="/WUHAN.svg" alt="Wuhan" className="h-full object-contain" />
+          </div>
+
+          <div className="h-20 md:h-32 flex items-center justify-center p-2 rounded-xl hover:bg-emerald-50 transition-colors cursor-pointer shrink-0">
+            <img src="/BIOBASE.svg" alt="Biobase" className="h-full object-contain" />
           </div>
         </div>
       </div>
     </Container>
   </section>
-  );
-};
-
-// --- Footer ---
-const Footer = () => (
-  <footer className="bg-slate-950 text-white py-40 px-8">
-    <Container>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-24">
-        <div className="col-span-1">
-          <img src="/logo_official.png" alt="DAS Energy's Logo" className="h-24 mb-12 brightness-0 invert" />
-          <p className="text-xl opacity-40 max-w-xs leading-relaxed font-bold">Leading the transition to a sustainable future through precision energy research.</p>
-        </div>
-        <div>
-          <h5 className="font-black text-[12px] uppercase tracking-[0.4em] mb-12 text-brand-light">Lines</h5>
-          <ul className="space-y-6 text-lg font-bold opacity-50">
-            <li><a href="#ecosystem" className="hover:text-brand-primary transition-colors">Coin Cell</a></li>
-            <li><a href="#ecosystem" className="hover:text-brand-primary transition-colors">Pouch Cell</a></li>
-            <li><a href="#ecosystem" className="hover:text-brand-primary transition-colors">Cylindrical</a></li>
-            <li><a href="#ecosystem" className="hover:text-brand-primary transition-colors">Prismatic</a></li>
-          </ul>
-        </div>
-        <div>
-          <h5 className="font-black text-[12px] uppercase tracking-[0.4em] mb-12 text-brand-light">Solutions</h5>
-          <ul className="space-y-6 text-lg font-bold opacity-50">
-            <li><a href="#services" className="hover:text-brand-primary transition-colors">Consulting</a></li>
-            <li><a href="#services" className="hover:text-brand-primary transition-colors">Maintenance</a></li>
-            <li><a href="#blog" className="hover:text-brand-primary transition-colors">Knowledge Hub</a></li>
-            <li><a href="#about" className="hover:text-brand-primary transition-colors">Our Story</a></li>
-            <li><a href="#contact" className="hover:text-brand-primary transition-colors">Inquiry</a></li>
-          </ul>
-        </div>
-        <div>
-          <h5 className="font-black text-[12px] uppercase tracking-[0.4em] mb-12 text-brand-light">HQ</h5>
-          <p className="text-xl font-bold opacity-40 leading-loose">
-            Tamil Nadu – 600100 <br />
-            India <br />
-            <span className="text-brand-light mt-6 block">info@dasenergy.com</span>
-          </p>
-        </div>
-      </div>
-      <div className="mt-40 pt-16 border-t-2 border-white/5 flex flex-wrap justify-between items-center opacity-30 gap-10">
-        <p className="text-xs font-black uppercase tracking-widest">© 2026 DAS Energy's. Built for Excellence.</p>
-        <div className="flex gap-12 text-[10px] font-black uppercase tracking-widest">
-          <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-          <a href="#" className="hover:text-white transition-colors">Compliance</a>
-          <a href="#" className="hover:text-white transition-colors">Logistics</a>
-        </div>
-      </div>
-    </Container>
-  </footer>
 );
 
 function App() {
@@ -674,17 +957,22 @@ function App() {
     return <CatalogPage onBack={() => setView('home')} />;
   }
 
+  if (['privacy', 'terms', 'cookies', 'compliance', 'disclaimer'].includes(view)) {
+    return <LegalPage type={view} onBack={() => setView('home')} />;
+  }
+
   return (
     <div className="bg-white selection:bg-brand-primary selection:text-white scroll-smooth relative">
       <Navbar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
       <main>
         <Hero />
         <About />
+        <TrustedPartners />
         <div id="ecosystem">
           <ProductEcosystem onOpenCatalog={() => setView('catalog')} />
         </div>
         <ProductGrid searchTerm={searchTerm} />
-        
+
         {/* New Battery Materials Section - Placed after Products */}
         <section className="pt-24 pb-0 bg-white border-t border-slate-100" id="materials">
           <Container>
@@ -692,7 +980,7 @@ function App() {
               <span className="text-xl md:text-2xl font-black uppercase tracking-[0.4em] text-brand-primary mb-4 block">
                 [ Component Ecosystem ]
               </span>
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 text-slate-900 uppercase tracking-tighter whitespace-nowrap">
+              <h2 className="text-3xl md:text-5xl lg:text-6xl font-black mb-6 text-slate-900 uppercase tracking-tighter">
                 We <span className="text-brand-primary">provide</span> Battery <span className="text-brand-primary">Materials</span>
               </h2>
               <p className="text-xl text-slate-500 font-bold">Raw materials and components for batteries, super capacitors, and fuel cell technologies.</p>
@@ -702,10 +990,11 @@ function App() {
         </section>
 
         <Services />
+        <OurAssociates />
         <Blog />
         <Contact />
       </main>
-      <Footer />
+      <Footer onNavigate={setView} />
 
       {/* Floating Buttons */}
       <div className="fixed bottom-8 right-8 z-[500] flex flex-col gap-4">
@@ -725,9 +1014,9 @@ function App() {
         </AnimatePresence>
 
         {/* WhatsApp Button */}
-        <a 
-          href="https://wa.me/918807243902" 
-          target="_blank" 
+        <a
+          href="https://wa.me/918807243902"
+          target="_blank"
           rel="noopener noreferrer"
           className="w-14 h-14 bg-[#25D366] text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all animate-bounce-slow"
         >

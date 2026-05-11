@@ -51,12 +51,9 @@ const OrbitShowcase = () => {
           </p>
         </div>
 
+        {/* Desktop Orbital View */}
         <div className="hidden lg:flex relative h-[650px] items-center justify-center">
-
-          {/* 
-            FIX: Removed the `animate` block from the center product. 
-            Now it will NOT shrink, fade, or blur when you hover an item. 
-          */}
+          {/* ... existing code ... */}
           <div className="relative z-40 w-64 h-64 rounded-full flex items-center justify-center p-8 border-2 border-cyan-400/50 bg-slate-900 shadow-[0_0_40px_rgba(0,255,255,0.2)]">
             <div className="absolute inset-0 bg-cyan-400/5 rounded-full animate-pulse" />
             <img
@@ -69,7 +66,6 @@ const OrbitShowcase = () => {
             </div>
           </div>
 
-          {/* Orbit Products */}
           {products.map((product, index) => {
             const angle = (rotation + (index * (360 / products.length))) * (Math.PI / 180);
             const radius = 280;
@@ -88,7 +84,6 @@ const OrbitShowcase = () => {
                   zIndex: isHovered ? 100 : 40,
                 }}
               >
-                {/* Connection Line */}
                 {isHovered && (
                   <svg
                     className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px]"
@@ -106,7 +101,6 @@ const OrbitShowcase = () => {
                   </svg>
                 )}
 
-                {/* Hit Area for Hover */}
                 <div
                   className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 flex items-center justify-center cursor-pointer"
                   onMouseEnter={() => {
@@ -118,7 +112,6 @@ const OrbitShowcase = () => {
                     setIsOrbiting(true);
                   }}
                 >
-                  {/* Visual Scaling Icon */}
                   <motion.div
                     className="w-full h-full rounded-full flex items-center justify-center border-2 border-cyan-400/30 bg-slate-900 shadow-lg relative z-10"
                     animate={{
@@ -130,14 +123,12 @@ const OrbitShowcase = () => {
                     {product.icon}
                   </motion.div>
 
-                  {/* The Details Popup */}
                   <AnimatePresence>
                     {isHovered && (
                       <motion.div
                         initial={{ opacity: 0, x: -10, scale: 0.95 }}
                         animate={{ opacity: 1, x: 0, scale: 1 }}
                         exit={{ opacity: 0, x: -10, scale: 0.95 }}
-                        // REMOVED: border-2 border-cyan-400/40 and the cyan shadow
                         className="absolute left-full ml-6 top-1/2 -translate-y-1/2 w-[420px] bg-slate-900/95 backdrop-blur-xl rounded-3xl overflow-hidden z-[110]"
                         style={{ cursor: 'default' }}
                       >
@@ -172,6 +163,31 @@ const OrbitShowcase = () => {
               </div>
             );
           })}
+        </div>
+
+        {/* Mobile Grid View */}
+        <div className="lg:hidden grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {products.map((product) => (
+            <motion.div 
+              key={product.id}
+              whileTap={{ scale: 0.98 }}
+              className="bg-slate-900/50 backdrop-blur-sm border border-slate-800 p-5 rounded-2xl flex flex-col gap-4"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 bg-white rounded-xl flex items-center justify-center shrink-0 overflow-hidden">
+                  <img src={product.image} alt={product.name} className="w-full h-full object-contain p-1" />
+                </div>
+                <div>
+                  <p className="text-cyan-400 text-[9px] font-black uppercase tracking-widest mb-0.5">{product.code}</p>
+                  <h4 className="text-lg font-bold text-white">{product.name}</h4>
+                </div>
+              </div>
+              <p className="text-slate-400 text-xs leading-relaxed">{product.description}</p>
+              <div className="text-[9px] text-cyan-300 bg-cyan-400/10 px-3 py-1.5 rounded-lg border border-cyan-400/20 w-fit">
+                {product.specs}
+              </div>
+            </motion.div>
+          ))}
         </div>
       </div>
     </div>
