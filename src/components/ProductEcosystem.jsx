@@ -30,17 +30,58 @@ const MiniOrbit = ({ category, data, onSelectItem, onHoverItem }) => {
       initial={{ opacity: 0, scale: 0.95 }}
       whileInView={{ opacity: 1, scale: 1 }}
       viewport={{ once: true }}
-      className={`flex flex-col relative transition-all duration-700 min-h-[450px] md:min-h-[800px] ${localHoveredId ? 'z-[1001]' : 'z-10'}`}
+      className={`flex flex-col relative transition-all duration-700 min-h-[450px] md:min-h-[650px] ${localHoveredId ? 'z-[1001]' : 'z-10'}`}
     >
       <div 
-        className="flex-1 relative flex items-center justify-center py-4 md:py-20"
+        className="flex-1 relative flex items-center justify-center py-4 md:py-12"
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => { setIsPaused(false); onHoverItem(null); setLocalHoveredId(null); }}
       >
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slate-50/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
         
         <div className={`relative z-20 w-32 h-32 md:w-64 md:h-64 bg-brand-primary rounded-full flex items-center justify-center p-8 shadow-2xl shadow-brand-primary/30 transition-all duration-700 ${localHoveredId ? 'scale-110' : ''}`}>
-          <img src={data.mainProduct} alt={category} className="w-full h-full object-contain" />
+          {/* Photorealistic Studio Shadow System (Prismatic Only) */}
+          {category === 'Prismatic' && (
+            <div className="absolute inset-0 pointer-events-none z-[5]">
+              {/* Layer 1: Ultra-Sharp Contact Point */}
+              <div 
+                className="absolute bottom-[21%] left-1/2 w-[58%] h-[5%] rounded-[100%]"
+                style={{ 
+                  background: 'rgba(0,0,0,0.98)',
+                  filter: 'blur(3px)',
+                  transform: 'translateX(-62%) scaleY(0.4) rotate(-1.5deg)',
+                }}
+              />
+              {/* Layer 2: Soft Ambient Occlusion with Color Bleed (Teal tint) */}
+              <div 
+                className="absolute bottom-[17%] left-1/2 w-[82%] h-[18%] rounded-[100%]"
+                style={{ 
+                  background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.7) 0%, rgba(15,118,110,0.2) 50%, transparent 85%)',
+                  filter: 'blur(12px)',
+                  transform: 'translateX(-58%) scaleY(0.45) rotate(-2.5deg)',
+                }}
+              />
+              {/* Layer 3: Directional Skew (Bottom-Left Tail) */}
+              <div 
+                className="absolute bottom-[15%] left-1/2 w-[95%] h-[12%] rounded-[100%]"
+                style={{ 
+                  background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.4) 0%, transparent 80%)',
+                  filter: 'blur(25px)',
+                  transform: 'translateX(-85%) scaleY(0.3) rotate(-6deg)',
+                }}
+              />
+              {/* Layer 4: Micro-Contact Shadow (Inner edge) */}
+              <div 
+                className="absolute bottom-[22%] left-1/2 w-[45%] h-[3%] rounded-[100%]"
+                style={{ 
+                  background: 'rgba(0,0,0,0.5)',
+                  filter: 'blur(1px)',
+                  transform: 'translateX(-70%) scaleY(0.5)',
+                }}
+              />
+            </div>
+          )}
+          <img src={data.mainProduct} alt={category} className="w-full h-full object-contain relative z-10" />
           <div className="absolute bottom-4 md:-bottom-10 left-1/2 -translate-x-1/2 whitespace-nowrap">
             <span className="text-brand-primary font-black text-[10px] md:text-sm uppercase tracking-[0.1em] md:tracking-[0.3em] bg-white px-4 md:px-6 py-1.5 md:py-2 rounded-full shadow-xl border-2 border-brand-primary">
               {category} Cell
@@ -50,7 +91,7 @@ const MiniOrbit = ({ category, data, onSelectItem, onHoverItem }) => {
 
         {data.items.map((item, index) => {
           const angle = (rotation + (index * (360 / data.items.length))) * (Math.PI / 180);
-          const radius = window.innerWidth < 768 ? 110 : 260;
+          const radius = window.innerWidth < 768 ? 100 : 280;
           const x = Math.cos(angle) * radius;
           const y = Math.sin(angle) * radius;
 
@@ -84,8 +125,8 @@ const MiniOrbit = ({ category, data, onSelectItem, onHoverItem }) => {
           );
         })}
 
-        <div className={`absolute w-[260px] h-[260px] md:w-[420px] md:h-[420px] border border-slate-50 rounded-full pointer-events-none transition-all duration-700 ${localHoveredId ? 'opacity-0' : 'opacity-100'}`} />
-        <div className={`absolute w-[320px] h-[320px] md:w-[520px] md:h-[520px] border border-slate-50 rounded-full pointer-events-none transition-all duration-700 ${localHoveredId ? 'opacity-0' : 'opacity-100'}`} />
+        <div className={`absolute w-[260px] h-[260px] md:w-[560px] md:h-[560px] border border-slate-50 rounded-full pointer-events-none transition-all duration-700 ${localHoveredId ? 'opacity-0' : 'opacity-100'}`} />
+        <div className={`absolute w-[320px] h-[320px] md:w-[680px] md:h-[680px] border border-slate-50 rounded-full pointer-events-none transition-all duration-700 ${localHoveredId ? 'opacity-0' : 'opacity-100'}`} />
       </div>
 
       <div className={`flex justify-end items-center transition-all duration-500 mt-6 ${localHoveredId ? 'opacity-0 blur-2xl pointer-events-none' : 'opacity-100'}`}>
@@ -109,11 +150,11 @@ const ProductEcosystem = ({ onOpenCatalog }) => {
   const [catalogData, setCatalogData] = useState(null);
 
   return (
-    <section className="relative w-full bg-white pt-8 pb-12 md:pt-16 md:pb-32" id="ecosystem">
+    <section className="relative w-full bg-white pt-8 pb-12 md:pt-12 md:pb-20" id="ecosystem">
       <div className="max-w-[1600px] mx-auto px-4 md:px-12">
-        <div className="text-center max-w-4xl mx-auto mb-6 md:mb-16">
+        <div className="text-center max-w-4xl mx-auto mb-6 md:mb-24">
           <span className="section-tag">Scientific Infrastructure</span>
-          <h2 className="text-5xl md:text-7xl lg:text-9xl font-black text-slate-900 mb-4 leading-[0.8] tracking-tighter uppercase">
+          <h2 className="text-5xl md:text-7xl lg:text-9xl font-black text-slate-900 mb-8 leading-[0.8] tracking-tighter uppercase">
             Visual <br /> <span className="text-brand-primary">Catalog</span>
           </h2>
           <p className="text-lg md:text-xl text-slate-500 font-bold max-w-2xl mx-auto leading-relaxed mb-6">
@@ -122,7 +163,7 @@ const ProductEcosystem = ({ onOpenCatalog }) => {
           <h3 className="text-xl md:text-2xl font-black text-brand-primary uppercase tracking-[0.2em] mb-10">Production Ecosystem</h3>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-32 lg:gap-48">
           {Object.entries(ecosystems).map(([key, data]) => (
             <MiniOrbit 
               key={key} category={key} data={data} 

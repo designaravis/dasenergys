@@ -13,6 +13,7 @@ const FacebookIcon = () => (<svg className="w-5 h-5 fill-current" viewBox="0 0 2
 
 import ProductEcosystem from './components/ProductEcosystem';
 import MaterialNavigation from './components/MaterialNavigation';
+import MagneticFieldHero from './components/MagneticFieldHero';
 import CatalogPage from './pages/Catalog';
 import { productCategories, coreProducts } from './data/materials.jsx';
 
@@ -206,14 +207,10 @@ const Navbar = ({ searchTerm, setSearchTerm }) => {
   );
 };
 
-// --- Hero (Upgraded: Dynamic Backdrop) ---
+// --- Hero (Upgraded: Magnetic Field Backdrop) ---
 const Hero = () => (
-  <section className="relative pt-32 pb-8 md:pt-50 md:pb-16 bg-white overflow-hidden">
-    {/* Animated background elements */}
-    <div className="absolute top-20 right-[-10%] w-[50%] h-[80%] bg-brand-soft rounded-full blur-[150px] opacity-60 animate-pulse-slow" />
-    <div className="absolute bottom-[-10%] left-[-5%] w-[40%] h-[60%] bg-slate-50 rounded-full blur-[120px] opacity-40" />
-
-    <Container className="relative z-10">
+  <MagneticFieldHero>
+    <Container>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
         <motion.div initial={{ opacity: 0, x: -50 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }}>
           <div className="inline-flex items-center gap-3 px-6 py-2.5 bg-slate-900 rounded-full mb-10 shadow-xl shadow-slate-900/10">
@@ -237,15 +234,15 @@ const Hero = () => (
           </div>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8, delay: 0.3 }} className="relative">
-          <div className="relative z-10 p-6 md:p-20 bg-white rounded-[40px] md:rounded-[64px] shadow-4xl border-4 border-slate-50 overflow-hidden group">
+        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8, delay: 0.3 }} className="relative lg:translate-x-24 lg:scale-105">
+          <div className="relative z-10 p-6 md:p-8 bg-white/40 backdrop-blur-md rounded-[40px] md:rounded-[64px] shadow-4xl border-4 border-white/20 overflow-hidden group">
             <div className="absolute inset-0 bg-brand-soft opacity-0 group-hover:opacity-100 transition-all duration-700 -z-10" />
-            <img src="/coin_cell.svg" alt="Featured Instrument" className="w-full h-full object-contain animate-float drop-shadow-3xl" />
+            <img src="/front.svg" alt="Featured Technology" className="w-full h-full object-contain animate-float drop-shadow-3xl" />
           </div>
         </motion.div>
       </div>
     </Container>
-  </section>
+  </MagneticFieldHero>
 );
 
 // --- Services (New Upgraded Section) ---
@@ -342,19 +339,17 @@ const TrustedPartners = () => {
     { src: '/IIT MADRAS.svg', alt: 'IIT Madras' },
     { src: '/IIT KOTTAYAM.svg', alt: 'IIT Kottayam' },
     { src: '/IIT KHARAGPUR.svg', alt: 'IIT Kharagpur' },
-    // Duplicate for infinite scroll
-    { src: '/IIT DELHI.svg', alt: 'IIT Delhi' },
-    { src: '/IIT BANGALORE.svg', alt: 'IIT Bangalore' },
-    { src: '/RAJALAKSHMI ENGINEERING COLLEGE.svg', alt: 'Rajalakshmi Engineering College' },
-    { src: '/CALICUT UNIVERSITY.svg', alt: 'Calicut University' },
-    { src: '/ANNA UNIVERSITY.svg', alt: 'Anna University' },
-    { src: '/IIT BOMBAY.svg', alt: 'IIT Bombay' },
-    { src: '/SATYABAMA UNIVERSITY.svg', alt: 'Satyabama University' },
-    { src: '/VELS.svg', alt: 'Vels' },
-    { src: '/IIT PALAKKAD.svg', alt: 'IIT Palakkad' },
-    { src: '/IIT MADRAS.svg', alt: 'IIT Madras' },
-    { src: '/IIT KOTTAYAM.svg', alt: 'IIT Kottayam' },
-    { src: '/IIT KHARAGPUR.svg', alt: 'IIT Kharagpur' },
+    { src: '/GOA.svg', alt: 'Goa University' },
+    { src: '/SSN.svg', alt: 'SSN College' },
+    { src: '/CAPLIN.svg', alt: 'Caplin Point' },
+    { src: '/SAVEETHA.svg', alt: 'Saveetha University' },
+    { src: '/KOSEI.svg', alt: 'Kosei Minda' },
+    { src: '/ISMAT.svg', alt: 'Ismat' },
+    { src: '/DRDO.svg', alt: 'DRDO' },
+    { src: '/EPSILON.svg', alt: 'Epsilon Carbon' },
+    { src: '/MINDA.svg', alt: 'Minda' },
+    { src: '/BHOPAL.svg', alt: 'IIT Bhopal' },
+    { src: '/MKU.svg', alt: 'Madurai Kamaraj University' },
   ];
 
   return (
@@ -375,8 +370,8 @@ const TrustedPartners = () => {
 
         <motion.div
           className="flex items-center gap-16 w-max"
-          animate={{ x: [0, -2000] }}
-          transition={{ repeat: Infinity, duration: 40, ease: "linear" }}
+          animate={{ x: [0, -4000] }}
+          transition={{ repeat: Infinity, duration: 60, ease: "linear" }}
         >
           {/* Triple the logos for a truly seamless full-width infinite scroll */}
           {[...logos, ...logos, ...logos].map((logo, index) => (
@@ -526,12 +521,12 @@ const Blog = () => {
   }, []);
 
   return (
-    <section className="pt-12 pb-32 bg-slate-50" id="blog">
+    <section className="min-h-screen flex items-center bg-slate-50 pt-20 pb-0" id="blog">
       <Container>
-        <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-10">
+        <div className="flex flex-col md:flex-row justify-between items-end mb-8 gap-10">
           <div className="max-w-2xl">
             <span className="section-tag">Technical Insights</span>
-            <h2 className="text-4xl md:text-6xl font-black text-slate-900 leading-[0.9] tracking-tighter uppercase">R&D <br /><span className="text-brand-primary">Knowledge</span> Hub</h2>
+            <h2 className="text-3xl md:text-5xl font-black text-slate-900 leading-[0.9] tracking-tighter uppercase">R&D <br /><span className="text-brand-primary">Knowledge</span> Hub</h2>
           </div>
           <p className="text-lg text-slate-500 font-bold max-w-sm">Deep dives into the latest energy fabrication technologies.</p>
         </div>
@@ -543,7 +538,7 @@ const Blog = () => {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {posts.length > 0 ? posts.map((p, i) => (
               <motion.article
                 key={p.id}
@@ -551,16 +546,16 @@ const Blog = () => {
                 whileHover={{ y: -10 }}
                 className="group bg-white rounded-[32px] overflow-hidden border-2 border-transparent hover:border-brand-primary transition-all shadow-xl shadow-slate-200/40 flex flex-col h-full cursor-pointer"
               >
-                <div className="aspect-video overflow-hidden relative">
+                <div className="h-44 md:h-52 overflow-hidden relative">
                   <img src={p.image} alt={p.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                   <div className="absolute top-6 left-6 bg-white/90 backdrop-blur-md px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest text-brand-primary">
                     {p.category}
                   </div>
                 </div>
-                <div className="p-8 flex flex-col flex-1">
+                <div className="p-6 flex flex-col flex-1">
                   <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">{p.date}</div>
-                  <h4 className="text-2xl font-black mb-4 text-slate-900 tracking-tighter leading-tight group-hover:text-brand-primary transition-colors">{p.title}</h4>
-                  <p className="text-slate-500 font-bold text-sm leading-relaxed mb-8 flex-grow line-clamp-3">{p.description}</p>
+                  <h4 className="text-xl font-black mb-2 text-slate-900 tracking-tighter leading-tight group-hover:text-brand-primary transition-colors">{p.title}</h4>
+                  <p className="text-slate-500 font-bold text-sm leading-relaxed mb-4 flex-grow line-clamp-3">{p.description}</p>
                   <div className="flex items-center gap-3 text-xs font-black uppercase tracking-widest text-brand-primary group-hover:gap-5 transition-all">
                     Read Analysis <ArrowRight className="w-4 h-4" />
                   </div>
@@ -612,7 +607,7 @@ const Contact = () => {
     name: "",
     phone: "",
     email: "",
-    university: "",
+    organization: "",
     message: ""
   });
   const [status, setStatus] = useState("");
@@ -621,14 +616,39 @@ const Contact = () => {
     e.preventDefault();
     setStatus("sending");
 
-    // NOTE: To make this functional, link to a service like EmailJS or Web3Forms
-    // For now, we simulate the submission to balamuruganprabakar@gmail.com
-    setTimeout(() => {
-      console.log("Inquiry sent to balamuruganprabakar@gmail.com:", formData);
-      setStatus("success");
-      setFormData({ name: "", phone: "", email: "", university: "", message: "" });
-      setTimeout(() => setStatus(""), 5000);
-    }, 1500);
+    try {
+      // Using SplitForms for reliable email delivery
+      // Get your access key at https://splitforms.com/
+      const response = await fetch("https://splitforms.com/api/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          access_key: "1c27f3b3ec33466eaae3264f8cf077f9", // User's SplitForms access key
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          organization: formData.organization,
+          message: formData.message,
+          subject: `New Technical Quote Request from ${formData.name}`,
+        }),
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        setStatus("success");
+        setFormData({ name: "", phone: "", email: "", organization: "", message: "" });
+        // Clear success message after 5 seconds
+        setTimeout(() => setStatus(""), 5000);
+      } else {
+        setStatus("error");
+      }
+    } catch (error) {
+      console.error("Submission error:", error);
+      setStatus("error");
+    }
   };
 
   const handleChange = (e) => {
@@ -637,7 +657,7 @@ const Contact = () => {
   };
 
   return (
-    <section className="pt-12 pb-4 bg-slate-50" id="contact">
+    <section className="pt-0 pb-4 bg-slate-50" id="contact">
       <Container>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           {/* Left Side: Inquiry Form Dashboard */}
@@ -646,6 +666,9 @@ const Contact = () => {
             <h2 className="text-2xl md:text-3xl font-black mb-6 text-slate-900 leading-tight uppercase tracking-tighter">Request <span className="text-brand-primary">Technical</span> Quote</h2>
 
             <form className="space-y-4" onSubmit={handleSubmit}>
+              {/* SplitForms Honeypot (Hidden) */}
+              <input type="text" name="_gotcha" style={{ display: "none" }} />
+              
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400 ml-2">Full Name</label>
@@ -683,8 +706,8 @@ const Contact = () => {
                 <div className="space-y-2">
                   <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400 ml-2">Organization</label>
                   <input
-                    name="university"
-                    value={formData.university}
+                    name="organization"
+                    value={formData.organization}
                     onChange={handleChange}
                     required
                     type="text" placeholder="IIT Madras / R&D Lab" className="w-full px-5 py-3 bg-slate-50 border-2 border-slate-50 rounded-xl focus:border-brand-primary focus:bg-white outline-none text-sm text-slate-600 transition-all"
@@ -711,9 +734,32 @@ const Contact = () => {
                 {status === "sending" ? "Processing..." : status === "success" ? "Inquiry Sent!" : <>Send Inquiry <Send className="w-4 h-4" /></>}
               </button>
 
-              {status === "success" && (
-                <p className="text-center text-[10px] font-black text-emerald-500 uppercase tracking-widest mt-4">Thank you! Your quote request has been routed.</p>
-              )}
+              <AnimatePresence>
+                {status === "success" && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    className="text-center p-4 bg-emerald-50 rounded-xl border border-emerald-100 mt-4"
+                  >
+                    <p className="text-[11px] font-black text-emerald-600 uppercase tracking-widest flex items-center justify-center gap-2">
+                      <CheckCircle2 className="w-4 h-4" /> Inquiry Received Successfully!
+                    </p>
+                    <p className="text-[10px] text-emerald-500 mt-1">Our technical team will contact you shortly.</p>
+                  </motion.div>
+                )}
+                {status === "error" && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-center p-4 bg-rose-50 rounded-xl border border-rose-100 mt-4"
+                  >
+                    <p className="text-[11px] font-black text-rose-600 uppercase tracking-widest">
+                      Something went wrong. Please try again.
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </form>
           </div>
 
@@ -759,17 +805,17 @@ const Contact = () => {
 
             {/* Social Media Links */}
             <div className="flex gap-4 justify-center mt-6">
-              <a href="#" className="w-12 h-12 bg-white rounded-2xl shadow-lg border border-slate-100 flex items-center justify-center text-[#1877F2] hover:border-[#1877F2]/20 hover:shadow-xl transition-all duration-300">
+              <a href="https://www.facebook.com/profile.php?id=61576641674340" target="_blank" rel="noopener noreferrer" className="w-12 h-12 bg-white rounded-2xl shadow-lg border border-slate-100 flex items-center justify-center text-[#1877F2] hover:border-[#1877F2]/20 hover:shadow-xl transition-all duration-300">
                 <FacebookIcon />
               </a>
-              <a href="#" className="w-12 h-12 bg-white rounded-2xl shadow-lg border border-slate-100 flex items-center justify-center text-[#0077B5] hover:border-[#0077B5]/20 hover:shadow-xl transition-all duration-300">
+              <a href="https://www.instagram.com/dasinstrumentsandsolutions/?hl=en" target="_blank" rel="noopener noreferrer" className="w-12 h-12 bg-white rounded-2xl shadow-lg border border-slate-100 flex items-center justify-center text-[#E4405F] hover:border-[#E4405F]/20 hover:shadow-xl transition-all duration-300">
+                <InstagramIcon />
+              </a>
+              <a href="https://www.linkedin.com/company/das-instruments-and-solutions/" target="_blank" rel="noopener noreferrer" className="w-12 h-12 bg-white rounded-2xl shadow-lg border border-slate-100 flex items-center justify-center text-[#0077B5] hover:border-[#0077B5]/20 hover:shadow-xl transition-all duration-300">
                 <LinkedInIcon />
               </a>
-              <a href="#" className="w-12 h-12 bg-white rounded-2xl shadow-lg border border-slate-100 flex items-center justify-center text-[#FF0000] hover:border-[#FF0000]/20 hover:shadow-xl transition-all duration-300">
+              <a href="https://youtube.com/@dasinstruments?si=tJ70_f_HrQTdpxGd" target="_blank" rel="noopener noreferrer" className="w-12 h-12 bg-white rounded-2xl shadow-lg border border-slate-100 flex items-center justify-center text-[#FF0000] hover:border-[#FF0000]/20 hover:shadow-xl transition-all duration-300">
                 <YoutubeIcon />
-              </a>
-              <a href="#" className="w-12 h-12 bg-white rounded-2xl shadow-lg border border-slate-100 flex items-center justify-center text-[#E4405F] hover:border-[#E4405F]/20 hover:shadow-xl transition-all duration-300">
-                <InstagramIcon />
               </a>
             </div>
           </div>
@@ -788,7 +834,7 @@ const Footer = ({ onNavigate }) => (
       <svg className="absolute top-0 right-0 w-full h-full opacity-30" viewBox="0 0 1440 320" fill="none">
         <path fill="#10b981" fillOpacity="0.4" d="M1440,0 L1440,120 C1200,160 900,80 720,120 C540,160 240,240 0,160 L0,0 Z"></path>
       </svg>
-      
+
       {/* Radial Shade now at Bottom - ULTRA DARK for Visible Contrast */}
       <svg className="absolute -bottom-24 -right-24 w-[120%] h-[150%] opacity-60 blur-3xl translate-x-1/4 rotate-12" viewBox="0 0 100 100" preserveAspectRatio="none">
         <circle cx="100" cy="100" r="80" fill="url(#footerGradInv)" />
@@ -904,7 +950,7 @@ const LegalPage = ({ type, onBack }) => {
 // --- Our Associates ---
 const OurAssociates = () => (
   <section className="pt-6 pb-6 bg-white border-t border-slate-100" id="associates">
-    <Container>
+    <div className="px-4 md:px-12">
       <div className="text-center mb-10">
         <h2 className="text-3xl md:text-5xl font-black text-slate-900 uppercase tracking-tighter">
           Our <span className="text-emerald-600">Associates</span>
@@ -915,30 +961,34 @@ const OurAssociates = () => (
         </p>
       </div>
 
-      <div className="bg-white border-2 border-slate-100 rounded-[40px] shadow-[0_40px_80px_rgba(0,163,130,0.15),0_10px_25px_rgba(0,0,0,0.08)] py-8 px-12 mt-6 max-w-6xl mx-auto overflow-hidden">
-        <div className="flex flex-wrap justify-center items-center gap-8 lg:gap-16">
-          <div className="h-20 md:h-32 flex items-center justify-center p-2 rounded-xl hover:bg-emerald-50 transition-colors cursor-pointer shrink-0">
-            <img src="/chino.svg" alt="Chino" className="h-full object-contain" />
+      <div className="bg-white border-2 border-slate-100 rounded-[40px] shadow-[0_40px_80px_rgba(0,163,130,0.15),0_10px_25px_rgba(0,0,0,0.08)] py-6 px-12 mt-6 max-w-[1350px] mx-auto overflow-hidden">
+        <div className="flex flex-nowrap justify-center items-center gap-6 md:gap-10 lg:gap-20 w-full">
+          <div className="h-20 md:h-36 flex items-center justify-center p-0 rounded-xl hover:bg-emerald-50 transition-colors cursor-pointer shrink-0">
+            <img src="/chino.svg" alt="Chino" className="h-full object-contain scale-105" />
           </div>
 
-          <div className="h-20 md:h-32 flex items-center justify-center p-2 rounded-xl hover:bg-emerald-50 transition-colors cursor-pointer shrink-0">
-            <img src="/RADBEE.svg" alt="Radbee" className="h-full object-contain" />
+          <div className="h-20 md:h-36 flex items-center justify-center p-0 rounded-xl hover:bg-emerald-50 transition-colors cursor-pointer shrink-0">
+            <img src="/RADBEE.svg" alt="Radbee" className="h-full object-contain scale-105" />
           </div>
 
-          <div className="h-20 md:h-32 flex items-center justify-center p-2 rounded-xl hover:bg-emerald-50 transition-colors cursor-pointer shrink-0">
-            <img src="/ZX.svg" alt="ZX" className="h-full object-contain" />
+          <div className="h-20 md:h-36 flex items-center justify-center p-0 rounded-xl hover:bg-emerald-50 transition-colors cursor-pointer shrink-0">
+            <img src="/ZX.svg" alt="ZX" className="h-full object-contain scale-105" />
           </div>
 
-          <div className="h-20 md:h-32 flex items-center justify-center p-2 rounded-xl hover:bg-emerald-50 transition-colors cursor-pointer shrink-0">
-            <img src="/WUHAN.svg" alt="Wuhan" className="h-full object-contain" />
+          <div className="h-20 md:h-36 flex items-center justify-center p-0 rounded-xl hover:bg-emerald-50 transition-colors cursor-pointer shrink-0">
+            <img src="/WUHAN.svg" alt="Wuhan" className="h-full object-contain scale-105" />
           </div>
 
-          <div className="h-20 md:h-32 flex items-center justify-center p-2 rounded-xl hover:bg-emerald-50 transition-colors cursor-pointer shrink-0">
-            <img src="/BIOBASE.svg" alt="Biobase" className="h-full object-contain" />
+          <div className="h-20 md:h-36 flex items-center justify-center p-0 rounded-xl hover:bg-emerald-50 transition-colors cursor-pointer shrink-0">
+            <img src="/BIOBASE.svg" alt="Biobase" className="h-full object-contain scale-105" />
+          </div>
+
+          <div className="h-20 md:h-36 flex items-center justify-center p-0 rounded-xl hover:bg-emerald-50 transition-colors cursor-pointer shrink-0">
+            <img src="/neware.svg" alt="Neware" className="h-full object-contain scale-105" />
           </div>
         </div>
       </div>
-    </Container>
+    </div>
   </section>
 );
 
