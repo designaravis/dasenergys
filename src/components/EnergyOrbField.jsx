@@ -3,10 +3,10 @@ import { motion, useMotionValue, useSpring, useTransform, useAnimationFrame } fr
 
 const OrbTrail = ({ color }) => (
   <motion.div
-    className="absolute rounded-full blur-xl pointer-events-none opacity-20"
+    className="absolute rounded-full blur-sm pointer-events-none opacity-20"
     style={{
-      width: 100,
-      height: 100,
+      width: 10,
+      height: 10,
       backgroundColor: color,
     }}
     animate={{
@@ -30,8 +30,8 @@ const EnergyOrb = ({ id, initialPos, size, polarity, mouseX, mouseY, allOrbs, on
   const springY = useSpring(initialPos.y, { damping: 40, stiffness: 120 });
 
   const isPositive = polarity === 'positive';
-  const themeColor = isPositive ? '#10b981' : '#1e3a8a';
-  const glowColor = isPositive ? '#34d399' : '#3b82f6';
+  const themeColor = isPositive ? '#00A382' : '#1e3a8a';
+  const glowColor = isPositive ? '#34D399' : '#3b82f6';
 
   useAnimationFrame(() => {
     if (!orbRef.current) return;
@@ -123,7 +123,7 @@ const EnergyOrb = ({ id, initialPos, size, polarity, mouseX, mouseY, allOrbs, on
 
       {/* Outer Halo */}
       <motion.div
-        className="absolute inset-[-30%] rounded-full blur-[60px]"
+        className="absolute inset-[-30%] rounded-full blur-[10px]"
         style={{ background: `radial-gradient(circle, ${themeColor}22 0%, transparent 70%)` }}
         animate={{ opacity: [0.4, 0.7, 0.4] }}
         transition={{ duration: 3 + Math.random() * 2, repeat: Infinity }}
@@ -139,7 +139,7 @@ const EnergyOrb = ({ id, initialPos, size, polarity, mouseX, mouseY, allOrbs, on
       >
         {/* Core Energy Field */}
         <motion.div
-          className="absolute inset-[20%] rounded-full blur-2xl"
+          className="absolute inset-[20%] rounded-full blur-sm"
           style={{ background: `radial-gradient(circle, ${glowColor} 0%, transparent 80%)` }}
           animate={{
             scale: [1, 1.3, 1],
@@ -167,14 +167,19 @@ const EnergyOrbField = () => {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
-  const orbData = useMemo(() => [
-    { id: 1, size: 180, initialPos: { x: 15, y: 35 }, polarity: 'positive' },
-    { id: 2, size: 140, initialPos: { x: 85, y: 20 }, polarity: 'negative' },
-    { id: 3, size: 200, initialPos: { x: 75, y: 75 }, polarity: 'positive' },
-    { id: 4, size: 120, initialPos: { x: 10, y: 80 }, polarity: 'negative' },
-    { id: 5, size: 160, initialPos: { x: 50, y: 45 }, polarity: 'positive' },
-    { id: 6, size: 100, initialPos: { x: 90, y: 55 }, polarity: 'negative' },
-  ], []);
+  const orbData = useMemo(() => {
+    const data = [];
+    // Generate 40 tiny energy sparks
+    for (let i = 0; i < 50; i++) {
+      data.push({
+        id: i,
+        size: Math.random() * 3 + 2, // Atomic scale: 2px to 5px
+        initialPos: { x: Math.random() * 100, y: Math.random() * 100 },
+        polarity: Math.random() > 0.5 ? 'positive' : 'negative'
+      });
+    }
+    return data;
+  }, []);
 
   const allOrbsRef = useRef(orbData.map(o => ({ ...o, pos: o.initialPos })));
 
@@ -195,7 +200,7 @@ const EnergyOrbField = () => {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none select-none z-0">
       {/* Background Depth layer */}
-      <div className="absolute inset-0 bg-gradient-to-tr from-slate-50 via-white to-emerald-50/30" />
+      <div className="absolute inset-0 bg-gradient-to-tr from-slate-50 via-white to-brand-soft/30" />
 
       {/* Magnetic Distortion SVG Filter (Subtle) */}
       <svg className="hidden">
@@ -220,17 +225,6 @@ const EnergyOrbField = () => {
         ))}
       </div>
 
-      {/* Mouse Gradient Interaction */}
-      <motion.div
-        className="fixed w-[800px] h-[800px] rounded-full pointer-events-none blur-[120px] opacity-[0.07]"
-        style={{
-          left: -400,
-          top: -400,
-          x: mouseX,
-          y: mouseY,
-          background: 'radial-gradient(circle, #10b981 0%, #1e3a8a 50%, transparent 100%)',
-        }}
-      />
     </div>
   );
 };

@@ -31,7 +31,7 @@ const MagneticFieldHero = ({ children }) => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
     const particles = [];
-    const particleCount = 60;
+    const particleCount = 100;
     const magneticRadius = 200;
 
     class Particle {
@@ -44,7 +44,7 @@ const MagneticFieldHero = ({ children }) => {
         this.y = Math.random() * dimensions.height;
         this.vx = (Math.random() - 0.5) * 2.0;
         this.vy = (Math.random() - 0.5) * 2.0;
-        this.baseSize = Math.random() * 10 + 6;
+        this.baseSize = Math.random() * 4 + 5; // Balanced scale: 5px to 9px
         this.size = this.baseSize;
        
         // Battery-inspired colors: Teal, Emerald, Navy
@@ -128,17 +128,7 @@ const MagneticFieldHero = ({ children }) => {
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
         ctx.fill();
 
-        // Subtle stroke for "glass" look
-        ctx.strokeStyle = 'rgba(255,255,255,0.3)';
-        ctx.lineWidth = 0.5;
-        ctx.stroke();
 
-        // Inner core glow
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size * 0.4, 0, Math.PI * 2);
-        ctx.fillStyle = '#fff';
-        ctx.globalAlpha = this.opacity * 0.5;
-        ctx.fill();
 
         ctx.restore();
       }
@@ -158,8 +148,7 @@ const MagneticFieldHero = ({ children }) => {
       const mX = smoothMouseX.get();
       const mY = smoothMouseY.get();
 
-      // Background energy ripples
-      drawEnergyField(ctx, mX, mY, time);
+      // No longer drawing energy field lines/ripples
 
       particles.forEach(p => {
         p.update(mX, mY);
@@ -167,48 +156,6 @@ const MagneticFieldHero = ({ children }) => {
       });
 
       animationFrame = requestAnimationFrame(animate);
-    };
-
-    const drawEnergyField = (ctx, mX, mY, t) => {
-      ctx.save();
-     
-      // Draw subtle glowing field lines radiating from cursor
-      const lineCount = 12;
-      const radius = magneticRadius;
-     
-      ctx.strokeStyle = 'rgba(16, 185, 129, 0.05)';
-      ctx.lineWidth = 1;
-     
-      for (let i = 0; i < lineCount; i++) {
-        const angle = (i / lineCount) * Math.PI * 2 + t * 0.2;
-        const startX = mX + Math.cos(angle) * 50;
-        const startY = mY + Math.sin(angle) * 50;
-        const endX = mX + Math.cos(angle) * radius;
-        const endY = mY + Math.sin(angle) * radius;
-       
-        const grad = ctx.createLinearGradient(startX, startY, endX, endY);
-        grad.addColorStop(0, 'rgba(16, 185, 129, 0.2)');
-        grad.addColorStop(1, 'rgba(16, 185, 129, 0)');
-       
-        ctx.beginPath();
-        ctx.moveTo(startX, startY);
-        ctx.lineTo(endX, endY);
-        ctx.strokeStyle = grad;
-        ctx.stroke();
-      }
-
-      // Ripple rings
-      for (let j = 0; j < 3; j++) {
-        const ringRadius = ((t * 100 + j * 100) % radius);
-        const ringAlpha = 1 - (ringRadius / radius);
-       
-        ctx.beginPath();
-        ctx.arc(mX, mY, ringRadius, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(16, 185, 129, ${ringAlpha * 0.1})`;
-        ctx.stroke();
-      }
-
-      ctx.restore();
     };
 
     animate();
@@ -228,32 +175,13 @@ const MagneticFieldHero = ({ children }) => {
       className="relative min-h-screen flex items-center bg-white overflow-hidden"
       onMouseMove={handleMouseMove}
     >
+      {/* Particles are drawn on canvas */}
       <canvas
         ref={canvasRef}
         width={dimensions.width}
         height={dimensions.height}
         className="absolute inset-0 z-0 pointer-events-none"
       />
-     
-      {/* Magnetic Lens Overlay (Distortion Effect) */}
-      <motion.div
-        className="absolute pointer-events-none z-10"
-        style={{
-          left: smoothMouseX,
-          top: smoothMouseY,
-          width: 350,
-          height: 350,
-          translateX: '-50%',
-          translateY: '-50%',
-          background: 'radial-gradient(circle, rgba(255,255,255,0) 0%, rgba(16, 185, 129, 0.02) 40%, rgba(255,255,255,0) 70%)',
-          borderRadius: '50%',
-          boxShadow: 'inset 0 0 50px rgba(16, 185, 129, 0.05)',
-          backdropFilter: 'blur(4px) saturate(120%)',
-          border: '1px solid rgba(16, 185, 129, 0.08)',
-        }}
-      >
-        <div className="absolute inset-0 bg-[radial-gradient(circle,rgba(255,255,255,0.8)_0%,transparent_10%)] animate-pulse" />
-      </motion.div>
 
       <div className="relative z-20 w-full pt-32 pb-16">
         {children}

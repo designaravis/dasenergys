@@ -84,7 +84,7 @@ const MaterialNavigation = () => {
       </AnimatePresence>
 
       {/* Desktop Grid Navigation (5x2 Layout) */}
-      <div className="hidden lg:grid grid-cols-5 gap-4 px-10 relative z-[60]">
+      <div className="hidden lg:grid grid-cols-5 gap-2 px-4 relative z-[60]">
         {materialData.map((category) => (
           <div
             key={category.id}
@@ -93,7 +93,7 @@ const MaterialNavigation = () => {
             onMouseLeave={() => setActiveCategory(null)}
           >
             <button
-              className={`flex items-center justify-center gap-2 w-full px-5 py-3 rounded-full transition-all duration-300 font-black text-[14px] uppercase tracking-widest shadow-lg text-white whitespace-nowrap z-[110] relative ${activeCategory === category.id ? 'scale-110 -translate-y-1' : ''}`}
+              className={`flex items-center justify-center gap-1.5 w-full px-3 py-3.5 rounded-full transition-all duration-300 font-black text-[12.5px] uppercase tracking-[0.12em] shadow-lg text-white whitespace-nowrap z-[110] relative ${activeCategory === category.id ? 'scale-110 -translate-y-1' : ''}`}
               style={{ 
                 backgroundColor: category.color,
                 boxShadow: activeCategory === category.id 
@@ -149,7 +149,7 @@ const MaterialNavigation = () => {
                                 borderColor: `${category.color}40`
                               }}
                             >
-                              <span className="font-bold text-[14px] text-slate-900 uppercase tracking-wide">
+                              <span className="font-black text-[13px] text-slate-900 uppercase tracking-[0.15em]">
                                 {item}
                               </span>
                               <div 
