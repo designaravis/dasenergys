@@ -827,10 +827,15 @@ const OurAssociates = () => (
     const finalPath = sectionId ? `${routePath}#${sectionId}`.replace('//#', '/#') : routePath;
     
     // If we're already on the target page, scroll immediately
-    if (location.pathname === routePath && sectionId) {
-      const element = document.getElementById(sectionId);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (location.pathname === routePath) {
+      if (sectionId) {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      } else {
+        // If navigating home while already on home, scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     } else {
       navigate(finalPath, { state });
