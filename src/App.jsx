@@ -152,9 +152,10 @@ const About = () => (
           <p className="text-lg text-slate-500 mb-12 leading-relaxed">
             Based in Chennai, we support a global network of universities and national laboratories. We believe in providing bespoke technical solutions that bridge the gap between academic research and industrial manufacturing.
           </p>
-          <div className="flex items-center gap-10 py-10 border-t-2 border-slate-200">
+          <div className="flex flex-wrap items-center gap-10 py-10 border-t-2 border-slate-200">
             <div><div className="text-4xl font-black text-slate-900">15+</div><div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-2">Years of Tech</div></div>
             <div><div className="text-4xl font-black text-slate-900">Global</div><div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-2">Certified Presence</div></div>
+            <div><div className="text-4xl font-black text-slate-900">Reliable</div><div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-2">Performance</div></div>
           </div>
         </div>
       </div>
