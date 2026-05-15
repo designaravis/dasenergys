@@ -135,18 +135,12 @@ const Navbar = ({ searchTerm, setSearchTerm, onNavigate }) => {
           </button>
 
           {/* Get Quote (Desktop) */}
-          <a 
-            href="#contact" 
-            onClick={(e) => { 
-              if (onNavigate) {
-                e.preventDefault();
-                onNavigate('home', null, 'contact');
-              }
-            }} 
+          <button 
+            onClick={() => onNavigate && onNavigate('contact')}
             className="hidden sm:block bg-brand-primary text-white rounded-full font-black uppercase tracking-[0.1em] px-8 py-3 text-[10px] hover:bg-slate-900 transition-all shadow-xl shadow-brand-primary/20 whitespace-nowrap"
           >
             Get Quote
-          </a>
+          </button>
 
           {/* Mobile Menu Toggle */}
           <button 
@@ -222,25 +216,21 @@ const Navbar = ({ searchTerm, setSearchTerm, onNavigate }) => {
               ))}
             </div>
             <div className="mt-auto flex flex-col gap-4">
-              <a 
-                href="#contact" 
-                onClick={(e) => { 
-                  if (onNavigate) {
-                    e.preventDefault();
-                    onNavigate('home', null, 'contact');
-                  }
+              <button 
+                onClick={() => {
+                  if (onNavigate) onNavigate('contact');
                   setIsMobileMenuOpen(false); 
                 }} 
                 className="w-full py-6 bg-brand-primary text-white rounded-3xl font-black uppercase text-center text-sm tracking-widest shadow-2xl shadow-brand-primary/30 active:scale-95 active:bg-brand-dark transition-all duration-200"
               >
                 Get Quote Now
-              </a>
+              </button>
 
               {/* Mobile QR Code Section */}
               <div className="mt-auto pt-8 border-t border-slate-100 flex flex-col items-center gap-4">
                 <button 
                   onClick={() => {
-                    onNavigate('home', null, 'contact');
+                    onNavigate('contact');
                     setIsMobileMenuOpen(false);
                   }}
                   className="p-4 bg-slate-50 rounded-2xl border-2 border-brand-primary/10 flex flex-col items-center gap-2 active:scale-95 transition-transform cursor-pointer"

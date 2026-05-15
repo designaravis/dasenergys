@@ -89,7 +89,7 @@ const BlogPage = ({ onSelectPost, onBack, searchTerm, setSearchTerm, onNavigate 
               {posts.length > 0 ? posts.map((p) => (
                 <motion.article
                   key={p.id}
-                  onClick={() => onSelectPost(p)}
+                  onClick={() => onNavigate(`/blog/${p.id}`, p)}
                   whileHover={{ y: -10 }}
                   className="group bg-white rounded-[40px] overflow-hidden border-2 border-transparent hover:border-brand-primary transition-all shadow-2xl shadow-slate-200/40 flex flex-col h-full cursor-pointer"
                 >

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import emailjs from '@emailjs/browser';
 import {
   ArrowLeft, ArrowRight, ChevronRight, Mail, Phone, MapPin, Send,
   Globe, ArrowUpRight, CheckCircle2, ShieldCheck, Zap, Activity, Settings, Factory,
@@ -62,7 +63,7 @@ const Hero = ({ onNavigate }) => (
           {/* Floating QR Code */}
           <div className="absolute -top-12 -right-8 z-20 hidden xl:block">
             <button 
-              onClick={() => onNavigate('home', null, 'contact')}
+              onClick={() => onNavigate('contact')}
               className="p-3 bg-white/80 backdrop-blur-md rounded-2xl border-2 border-brand-primary/20 shadow-2xl hover:scale-110 transition-transform cursor-pointer group block"
             >
               <img src="/qrcode.svg" alt="Scan QR Code" className="w-20 h-20 opacity-80 group-hover:opacity-100 transition-opacity" />
@@ -284,9 +285,12 @@ const ProductGrid = ({ searchTerm }) => {
                       </span>
                     </div>
 
-                    <a href="#contact" className="w-full py-2.5 bg-brand-dark text-white rounded-md text-[10px] font-black uppercase tracking-[0.2em] hover:bg-brand-primary transition-all text-center">
+                    <button 
+                      onClick={() => onNavigate('/contact')}
+                      className="w-full py-2.5 bg-brand-dark text-white rounded-md text-[10px] font-black uppercase tracking-[0.2em] hover:bg-brand-primary transition-all text-center cursor-pointer"
+                    >
                       Inquire Spec
-                    </a>
+                    </button>
                   </div>
                 </motion.div>
               ))
@@ -356,7 +360,7 @@ const Blog = ({ onNavigate, onSelectPost }) => {
   }, []);
 
   return (
-    <section className="py-10 bg-slate-50" id="blog">
+    <section className="py-10 bg-slate-50">
       <Container>
         <div className="flex flex-col md:flex-row justify-between items-end mb-8 gap-10">
           <div className="max-w-2xl">
@@ -385,10 +389,7 @@ const Blog = ({ onNavigate, onSelectPost }) => {
             {posts.length > 0 ? posts.map((p) => (
               <motion.article
                 key={p.id}
-                onClick={() => {
-                  onSelectPost(p);
-                  onNavigate('blog-detail');
-                }}
+                onClick={() => onNavigate(`/blog/${p.id}`, p)}
                 whileHover={{ y: -10 }}
                 className="group bg-white rounded-[32px] overflow-hidden border-2 border-transparent hover:border-brand-primary transition-all shadow-xl shadow-slate-200/40 flex flex-col h-full cursor-pointer"
               >
@@ -435,34 +436,23 @@ const Contact = () => {
     setStatus("sending");
 
     try {
-      // Using SplitForms for reliable email delivery
-      // Get your access key at https://splitforms.com/
-      const response = await fetch("https://splitforms.com/api/submit", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({
-          access_key: "1c27f3b3ec33466eaae3264f8cf077f9", // User's SplitForms access key
+      // Using EmailJS for free automated replies
+      await emailjs.send(
+        "service_dtndzzg",
+        "template_qvy4hoi",
+        {
           name: formData.name,
           email: formData.email,
           phone: formData.phone,
           organization: formData.organization,
           message: formData.message,
-          subject: `New Technical Quote Request from ${formData.name}`,
-        }),
-      });
+        },
+        "oDh6XUPhF-88EhnDM"
+      );
 
-      const result = await response.json();
-      if (result.success) {
-        setStatus("success");
-        setFormData({ name: "", phone: "", email: "", organization: "", message: "" });
-        // Clear success message after 5 seconds
-        setTimeout(() => setStatus(""), 5000);
-      } else {
-        setStatus("error");
-      }
+      setStatus("success");
+      setFormData({ name: "", phone: "", email: "", organization: "", message: "" });
+      setTimeout(() => setStatus(""), 5000);
     } catch (error) {
       console.error("Submission error:", error);
       setStatus("error");
@@ -808,14 +798,11 @@ const OurAssociates = () => (
       </div>
     </div>
   </section>
-);
-
-function App() {
+);function App() {
   const navigate = useNavigate();
   const location = useLocation();
   const [showScroll, setShowScroll] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [activePost, setActivePost] = useState(null);
 
   useEffect(() => {
     const checkScroll = () => setShowScroll(window.scrollY > 400);
@@ -823,156 +810,169 @@ function App() {
     return () => window.removeEventListener('scroll', checkScroll);
   }, []);
 
-  // Search auto-scroll logic: take user to products section when they start typing
+  // Search auto-scroll logic
   useEffect(() => {
-    if (searchTerm.trim() !== "") {
-      if (view !== 'home') {
-        setView('home');
+    if (searchTerm.trim() !== "" && location.pathname === '/') {
+      const element = document.getElementById('products');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
-      
-      // Delay slightly to allow view to switch or DOM to stabilize
-      const timer = setTimeout(() => {
-        const element = document.getElementById('products');
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      }, 100);
-      return () => clearTimeout(timer);
     }
-  }, [searchTerm]);
+  }, [searchTerm, location.pathname]);
 
-  // Handle navigation to different views/pages
-  const handleNavigate = (newView, post = null, sectionId = null) => {
-    if (post) setActivePost(post);
+  const handleNavigate = (path, state = null, sectionId = null) => {
+    const routePath = path === 'home' ? '/' : path.startsWith('/') ? path : `/${path}`;
     
-    // Convert view to route
-    const routes = {
-      home: '/',
-      catalog: '/catalog',
-      blog: '/blog',
-      'blog-detail': '/blog-detail',
-      contact: '/contact'
-    };
-
-    const targetPath = routes[newView] || '/';
+    // Explicitly handle section hashes
+    const finalPath = sectionId ? `${routePath}#${sectionId}`.replace('//#', '/#') : routePath;
     
-    // If navigating to home with a section, or just home
-    if (newView === 'home' || newView === 'contact' || newView === 'catalog' || newView === 'blog') {
-      navigate(targetPath);
-    }
-
-    if (sectionId) {
-      setTimeout(() => {
-        const element = document.getElementById(sectionId);
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      }, 100);
+    // If we're already on the target page, scroll immediately
+    if (location.pathname === routePath && sectionId) {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     } else {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      navigate(finalPath, { state });
     }
   };
 
-  return (
-    <div className="bg-white selection:bg-brand-primary selection:text-white scroll-smooth relative">
-      <Navbar searchTerm={searchTerm} setSearchTerm={setSearchTerm} onNavigate={handleNavigate} />
+  const prevPath = React.useRef(location.pathname);
+
+  useEffect(() => {
+    // Disable automatic browser scroll restoration
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+  }, []);
+
+  useEffect(() => {
+    // Scroll logic based on URL Hash (e.g., /#blog)
+    const sectionId = location.hash.replace('#', '');
+    
+    if (sectionId && (location.pathname === '/' || location.pathname === '')) {
+      const performScroll = () => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          return true;
+        }
+        return false;
+      };
+
+      // Multi-stage scroll to handle dynamic loading
+      performScroll();
+      const intervals = [100, 300, 700, 1200, 2000, 3000];
+      const timers = intervals.map(ms => setTimeout(performScroll, ms));
       
-      <Routes>
-        <Route path="/" element={
-          <main>
-            <Hero onNavigate={handleNavigate} />
-            <About />
-            <TrustedPartners />
-            <div id="ecosystem">
-              <ProductEcosystem onOpenCatalog={() => handleNavigate('catalog')} />
-            </div>
-            <ProductGrid searchTerm={searchTerm} />
+      return () => timers.forEach(t => clearTimeout(t));
+    } else if (location.pathname !== prevPath.current) {
+      window.scrollTo(0, 0);
+    }
+    
+    prevPath.current = location.pathname;
+  }, [location.pathname, location.hash]);
 
-            {/* New Battery Materials Section */}
-            <section className="pt-10 pb-0 bg-white border-t border-slate-100" id="materials">
-              <Container>
-                <div className="text-center max-w-4xl mx-auto mb-16">
-                  <span className="text-xl md:text-2xl font-black uppercase tracking-[0.4em] text-brand-primary mb-4 block">
-                    [ Component Ecosystem ]
-                  </span>
-                  <h2 className="text-3xl md:text-5xl lg:text-6xl font-black mb-6 text-slate-900 uppercase tracking-tighter">
-                    We <span className="text-brand-primary">provide</span> Battery <span className="text-brand-primary">Materials</span>
-                  </h2>
-                  <p className="text-xl text-slate-500 font-bold">Raw materials and components for batteries, super capacitors, and fuel cell technologies.</p>
-                </div>
-                <MaterialNavigation />
-              </Container>
-            </section>
-
-            <Services />
-            <OurAssociates />
-            <Blog onNavigate={handleNavigate} onSelectPost={setActivePost} />
-            <Contact />
-          </main>
-        } />
-        
-        <Route path="/catalog" element={<CatalogPage onBack={() => handleNavigate('home')} />} />
-        
-        <Route path="/blog" element={
-          <BlogPage 
-            searchTerm={searchTerm} 
-            setSearchTerm={setSearchTerm} 
-            onBack={() => handleNavigate('home')} 
-            onSelectPost={(p) => handleNavigate('blog-detail', p)}
-            onNavigate={handleNavigate}
-          />
-        } />
-        
-        <Route path="/blog-detail" element={
-          <BlogDetail 
-            post={activePost} 
-            searchTerm={searchTerm} 
-            setSearchTerm={setSearchTerm} 
-            onBack={() => handleNavigate('home', null, 'blog')} 
-            onNavigate={handleNavigate}
-          />
-        } />
-
-        <Route path="/contact" element={<ContactPage onBack={() => handleNavigate('home')} />} />
-
-        {['privacy', 'terms', 'cookies', 'compliance', 'disclaimer'].map(legal => (
-          <Route key={legal} path={`/${legal}`} element={<LegalPage type={legal} onBack={() => handleNavigate('home')} />} />
-        ))}
-      </Routes>
-
-      <Footer onNavigate={handleNavigate} />
-
-      {/* Floating Buttons */}
-      <div className="fixed bottom-8 right-8 z-[500] flex flex-col gap-4">
-        {/* Scroll Top */}
-        <AnimatePresence>
-          {showScroll && (
-            <motion.button
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="w-14 h-14 bg-white border-2 border-slate-200 text-slate-900 rounded-full flex items-center justify-center shadow-xl hover:bg-slate-900 hover:text-white transition-all group"
-            >
-              <ArrowRight className="-rotate-90 group-hover:-translate-y-1 transition-transform" />
-            </motion.button>
-          )}
-        </AnimatePresence>
-
-        {/* WhatsApp Button */}
-        <a
-          href="https://wa.me/918807243902"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="w-14 h-14 bg-[#25D366] text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all animate-bounce-slow"
-        >
-          <svg viewBox="0 0 24 24" className="w-8 h-8 fill-current">
-            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-          </svg>
-        </a>
-      </div>
-    </div>
+  return (
+    <Routes>
+      <Route path="/" element={
+        <HomePage 
+          searchTerm={searchTerm} 
+          setSearchTerm={setSearchTerm} 
+          onNavigate={handleNavigate}
+          showScroll={showScroll}
+        />
+      } />
+      <Route path="/catalog" element={<CatalogPage onBack={() => handleNavigate('/', null, 'ecosystem')} onNavigate={handleNavigate} />} />
+      <Route path="/blog" element={
+        <BlogPage 
+          searchTerm={searchTerm} 
+          setSearchTerm={setSearchTerm} 
+          onBack={() => handleNavigate('/', null, 'blog')} 
+          onNavigate={handleNavigate}
+        />
+      } />
+      <Route path="/blog/:id" element={
+        <BlogDetail 
+          searchTerm={searchTerm} 
+          setSearchTerm={setSearchTerm} 
+          onBack={() => handleNavigate('/', null, 'blog')} 
+          onNavigate={handleNavigate}
+        />
+      } />
+      <Route path="/contact" element={<ContactPage onBack={() => handleNavigate('/')} onNavigate={handleNavigate} />} />
+      
+      {['privacy', 'terms', 'cookies', 'compliance', 'disclaimer'].map(type => (
+        <Route key={type} path={`/${type}`} element={<LegalPage type={type} onBack={() => handleNavigate('/')} />} />
+      ))}
+    </Routes>
   );
 }
+
+const HomePage = ({ searchTerm, setSearchTerm, onNavigate, showScroll }) => (
+  <div className="bg-white selection:bg-brand-primary selection:text-white scroll-smooth relative">
+    <Navbar searchTerm={searchTerm} setSearchTerm={setSearchTerm} onNavigate={onNavigate} />
+    <main>
+      <Hero onNavigate={onNavigate} />
+      <About />
+      <TrustedPartners />
+      <div id="ecosystem">
+        <ProductEcosystem onOpenCatalog={() => onNavigate('/catalog')} />
+      </div>
+      <ProductGrid searchTerm={searchTerm} />
+
+      <section className="pt-10 pb-0 bg-white border-t border-slate-100" id="materials">
+        <Container>
+          <div className="text-center max-w-4xl mx-auto mb-16">
+            <span className="text-xl md:text-2xl font-black uppercase tracking-[0.4em] text-brand-primary mb-4 block">
+              [ Component Ecosystem ]
+            </span>
+            <h2 className="text-3xl md:text-5xl lg:text-6xl font-black mb-6 text-slate-900 uppercase tracking-tighter">
+              We <span className="text-brand-primary">provide</span> Battery <span className="text-brand-primary">Materials</span>
+            </h2>
+            <p className="text-xl text-slate-500 font-bold">Raw materials and components for batteries, super capacitors, and fuel cell technologies.</p>
+          </div>
+          <MaterialNavigation />
+        </Container>
+      </section>
+
+      <Services />
+      <OurAssociates />
+      <div id="blog">
+        <Blog onNavigate={onNavigate} />
+      </div>
+      <Contact />
+    </main>
+    <Footer onNavigate={onNavigate} />
+
+    {/* Floating Buttons */}
+    <div className="fixed bottom-8 right-8 z-[500] flex flex-col gap-4">
+      <AnimatePresence>
+        {showScroll && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="w-14 h-14 bg-white border-2 border-slate-200 text-slate-900 rounded-full flex items-center justify-center shadow-xl hover:bg-slate-900 hover:text-white transition-all group"
+          >
+            <ArrowRight className="-rotate-90 group-hover:-translate-y-1 transition-transform" />
+          </motion.button>
+        )}
+      </AnimatePresence>
+
+      <a
+        href="https://wa.me/918807243902"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="w-14 h-14 bg-[#25D366] text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all animate-bounce-slow"
+      >
+        <svg viewBox="0 0 24 24" className="w-8 h-8 fill-current">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+        </svg>
+      </a>
+    </div>
+  </div>
+);
 
 export default App;

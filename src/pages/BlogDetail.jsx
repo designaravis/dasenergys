@@ -1,10 +1,60 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Calendar } from 'lucide-react';
+import { ArrowLeft, Calendar, Loader2 } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Container from '../components/Container';
 
-const BlogDetail = ({ post, onBack, searchTerm, setSearchTerm, onNavigate }) => {
+const BlogDetail = ({ post: initialPost, onBack, searchTerm, setSearchTerm, onNavigate }) => {
+  const { id } = useParams();
+  const [post, setPost] = useState(initialPost);
+  const [loading, setLoading] = useState(!initialPost);
+
+  useEffect(() => {
+    if (!post && id) {
+      const fetchPost = async () => {
+        try {
+          const response = await fetch(
+            `https://cdn.contentful.com/spaces/lmooxhcoosfx/environments/master/entries?access_token=hLrd9mzbdWE0cJgY1SWkV_dYY49tJUW7whB8UluzaY0&sys.id=${id}&include=2`
+          );
+          const data = await response.json();
+
+          if (data.items && data.items.length > 0) {
+            const item = data.items[0];
+            const assets = data.includes?.Asset || [];
+            const imageId = item.fields.featuredImage?.sys.id;
+            const asset = assets.find(a => a.sys.id === imageId);
+            const imageUrl = asset ? `https:${asset.fields.file.url}` : "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=800";
+
+            setPost({
+              id: item.sys.id,
+              title: item.fields.title,
+              category: item.fields.category || 'Technical Analysis',
+              date: new Date(item.fields.date).toLocaleDateString('en-US', {
+                month: 'long', day: 'numeric', year: 'numeric'
+              }),
+              image: imageUrl,
+              fullContent: item.fields.content
+            });
+          }
+        } catch (error) {
+          console.error("Error fetching post:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchPost();
+    }
+  }, [id, post]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <Loader2 className="w-12 h-12 text-brand-primary animate-spin" />
+      </div>
+    );
+  }
+
   if (!post) return null;
 
   return (
@@ -34,14 +84,14 @@ const BlogDetail = ({ post, onBack, searchTerm, setSearchTerm, onNavigate }) => 
                 </div>
               </div>
               
-              <h1 className="text-4xl md:text-6xl font-black text-slate-900 uppercase tracking-tighter leading-[0.95] mb-8">
+              <h1 className="text-2xl md:text-4xl font-black text-slate-900 uppercase tracking-tighter leading-[0.95] mb-8">
                 {post.title}
               </h1>
               
               <div className="h-2 w-32 bg-brand-primary rounded-full mb-12" />
             </header>
 
-            {/* Featured Image - Updated to fit perfectly */}
+            {/* Featured Image */}
             <div className="relative w-full rounded-[40px] overflow-hidden shadow-2xl mb-16 border-8 border-white ring-1 ring-slate-100 bg-slate-50">
               <img 
                 src={post.image} 
@@ -53,7 +103,7 @@ const BlogDetail = ({ post, onBack, searchTerm, setSearchTerm, onNavigate }) => 
             {/* Content Section */}
             <div className="max-w-3xl mx-auto">
               <div className="prose prose-slate prose-xl max-w-none">
-                <p className="text-xl md:text-2xl text-slate-600 font-bold leading-relaxed whitespace-pre-wrap selection:bg-brand-primary selection:text-white">
+                <p className="text-lg text-slate-600 font-normal leading-relaxed whitespace-pre-wrap selection:bg-brand-primary selection:text-white">
                   {post.fullContent}
                 </p>
               </div>
@@ -65,7 +115,7 @@ const BlogDetail = ({ post, onBack, searchTerm, setSearchTerm, onNavigate }) => 
                   <h3 className="text-3xl md:text-4xl font-black uppercase tracking-tighter mb-6">Want to implement these <br /><span className="text-brand-primary">technologies</span> in your lab?</h3>
                   <p className="text-slate-400 font-bold text-lg mb-10 max-w-xl">Our engineering team can help you customize fabrication lines based on your research requirements.</p>
                   <button 
-                    onClick={() => onNavigate('home', null, 'contact')}
+                    onClick={() => onNavigate('/contact')}
                     className="px-12 py-5 bg-brand-primary text-white rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-white hover:text-brand-primary transition-all shadow-2xl shadow-brand-primary/20"
                   >
                     Contact Technical Support
